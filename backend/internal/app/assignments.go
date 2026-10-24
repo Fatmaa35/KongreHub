@@ -360,9 +360,6 @@ func (a *App) manualAssign(w http.ResponseWriter, r *http.Request) error {
 		if err != nil {
 			return err
 		}
-		if !active || cur >= maxLoad {
-			return httpx.Conflict("reviewer_at_capacity", fmt.Sprintf("hakemin yükü azami sınırda (%d/%d)", cur, maxLoad))
-		}
 		paper, err := loadPaper(ctx, tx, subID, 1)
 		if err != nil {
 			return err
@@ -384,6 +381,9 @@ func (a *App) manualAssign(w http.ResponseWriter, r *http.Request) error {
 			if pool[i].ID == in.ReviewerID {
 				if reason := cf.Conflict(&paper, &pool[i]); reason != assignment.COINone {
 					return httpx.Conflict("conflict_of_interest", "çıkar çatışması: "+coiLabel(reason))
+				}
+				if !active || cur >= maxLoad {
+					return httpx.Conflict("reviewer_at_capacity", fmt.Sprintf("hakemin yükü azami sınırda (%d/%d)", cur, maxLoad))
 				}
 				score := keywords.Coverage(paper.Keywords, pool[i].Keywords)
 				assignmentID, err = assignTx(ctx, tx, subID, in.ReviewerID, round, "manual", score, now, p)

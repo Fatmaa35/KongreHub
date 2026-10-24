@@ -470,6 +470,16 @@ func (a *App) pay(w http.ResponseWriter, r *http.Request) error {
 		if total == 0 {
 			return httpx.Conflict("nothing_to_pay", "ödenecek tutar yok")
 		}
+		// aynı kayıt için süren (son 15 dk) ya da başarılı ödeme varsa ikinci ödeme başlatılmaz;
+		// kayıt satırı kilitli olduğundan eşzamanlı iki istek bu kontrolü aynı anda geçemez.
+		var busy bool
+		if err := tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM payments WHERE registration_id=$1 AND
+			(status='succeeded' OR (status='pending' AND created_at > now() - interval '15 minutes')))`, id).Scan(&busy); err != nil {
+			return err
+		}
+		if busy {
+			return httpx.Conflict("payment_in_progress", "bu kayıt için devam eden bir ödeme var")
+		}
 		ref := "pay_" + randHex(12)
 		if _, err := tx.Exec(ctx, `INSERT INTO payments (registration_id, provider_ref, amount_cents, currency) VALUES ($1,$2,$3,$4)`, id, ref, total, currency); err != nil {
 			return err
