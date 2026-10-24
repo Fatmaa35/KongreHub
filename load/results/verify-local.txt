@@ -4,32 +4,32 @@ KİMLİK  SONUÇ  SÜRE     AÇIKLAMA
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────
 HEALTH  PASS   0s       GET /health + /metrics
                         ↳ database=up, /metrics ve /openapi.yaml erişilebilir
-AUTH    PASS   110ms    Kimlik doğrulama (yanlış parola, token yenileme/rotasyon)
+AUTH    PASS   120ms    Kimlik doğrulama (yanlış parola, token yenileme/rotasyon)
                         ↳ yanlış parola 401, bozuk token 401, refresh rotasyonu ve yeniden kullanım reddi
-AUTHZ   PASS   240ms    Yetki ihlalleri: tüm uç noktalar × roller (403/401)
+AUTHZ   PASS   270ms    Yetki ihlalleri: tüm uç noktalar × roller (403/401)
                         ↳ 67 uç nokta, 241 yetkisiz çağrı: hepsi 401/403; kaynak düzeyi 404
-T-1     PASS   1.19s    Hakem atama (500×150 < 20 sn, ÇÇ, yük, nedenler, eşzamanlılık)
-                        ↳ 500 bildiri/150 hakem: 1492/1500 atama 619 ms (istemci 633ms), ort. skor 0.846, yük 7..14, atanamayan 3 map[conflict_of_interest:1 insufficient_expertise:2]; eşzamanlı 4 çalıştırma kodları [409 200 409 409] (409=3), oluşturulan [0 1012 0 0]
+T-1     PASS   990ms    Hakem atama (500×150 < 20 sn, ÇÇ, yük, nedenler, eşzamanlılık)
+                        ↳ 500 bildiri/150 hakem: 1492/1500 atama 559 ms (istemci 571ms), ort. skor 0.846, yük 7..14, atanamayan 3 map[conflict_of_interest:1 insufficient_expertise:2]; eşzamanlı 4 çalıştırma kodları [409 409 409 200] (409=3), oluşturulan [0 0 0 1012]
 F-2     PASS   20ms     Hakem havuzu ve elle atama (keyset, ÇÇ reddi)
                         ↳ 150 hakem 4 sayfada (keyset, tekrar yok), yük ≤ azami; elle atamada 2 çıkar çatışması reddi (409)
-F-1     PASS   130ms    Bildiri gönderimi (dosya, yazarlar, anahtar kelimeler)
+F-1     PASS   90ms     Bildiri gönderimi (dosya, yazarlar, anahtar kelimeler)
                         ↳ bildiri #501: 2 yazar, 3 anahtar kelime (normalize), PDF yüklendi ve /Author temizlendi; eksik dosya 400 validation_error
-F-3     PASS   260ms    Değerlendirme formu, karar ve düzeltme turu
+F-3     PASS   230ms    Değerlendirme formu, karar ve düzeltme turu
                         ↳ form doğrulaması (11 puan → 400), 3+1 değerlendirme, karar=major_revision, v2 yüklendi → tur 2, 4 hakem tekrar bakıyor
-T-3     PASS   120ms    Ağırlıklı skor, uyuşmazlık→4. hakem, 14 gün süre aşımı, idempotent job
+T-3     PASS   130ms    Ağırlıklı skor, uyuşmazlık→4. hakem, 14 gün süre aşımı, idempotent job
                         ↳ skorlar [3 7 9 9] (fark 6.0 > 3 → 4. hakem), 15 gün geriye alınan atama süresi doldu ve yerine 1 hakem atandı; job 1={"scanned":61,"reminders_sent":{"day12":13,"day7":55},"expired":6,"reassigned":6,"no_repla job 2 expired=0 (idempotent); geçersiz karar 409; tur 2 → kabul
-T-2     PASS   90ms     Çift kör gizlilik: uç nokta × rol sızıntı taraması, PDF metadata
+T-2     PASS   100ms    Çift kör gizlilik: uç nokta × rol sızıntı taraması, PDF metadata
                         ↳ 5 aktör × uç nokta, 90 yanıt tarandı (gövde, dosya adı, PDF metadata, hata mesajları): sızıntı yok; yazar 'Hakem A…' görür, editör iki tarafı görür
 F-4     PASS   10ms     Program: salon, zaman dilimi, oturum
                         ↳ 6 salon, 15 zaman dilimi, 21 oturum; kişisel programa ekleme ve iCal dışa aktarma
 T-4     PASS   90ms     Program çizelgeleme + bağımsız doğrulayıcı + çakışma reddi
-                        ↳ 21 oturum, 82 bildiri, oturum içi benzerlik 0.402, 17 ms; ihlal 0, /validate geçerli; dışarıda kalanlar map[no_paid_author:9]; dolu hücreye taşıma 409
-F-5     PASS   550ms    Kayıt ve ücretlendirme (idempotent ödeme, grup)
-                        ↳ kayıt #245 ödendi (fatura KH-2026-000209); aynı anahtar → aynı yanıt (Idempotent-Replayed), farklı gövde 422, anahtarsız 400; 8 eşzamanlı ödemeden 1 başarılı [409 409 409 409 409 201 409 409]; 5 kişilik grupta indirim
-T-5     PASS   160ms    Kademeli ücret, kur dondurma, iade, webhook idempotansı, boşluksuz fatura
+                        ↳ 21 oturum, 82 bildiri, oturum içi benzerlik 0.402, 16 ms; ihlal 0, /validate geçerli; dışarıda kalanlar map[no_paid_author:9]; dolu hücreye taşıma 409
+F-5     PASS   560ms    Kayıt ve ücretlendirme (idempotent ödeme, grup)
+                        ↳ kayıt #245 ödendi (fatura KH-2026-000209); aynı anahtar → aynı yanıt (Idempotent-Replayed), farklı gövde 422, anahtarsız 400; 8 eşzamanlı ödemeden 1 başarılı [409 201 409 409 409 409 409 409]; 5 kişilik grupta indirim
+T-5     PASS   140ms    Kademeli ücret, kur dondurma, iade, webhook idempotansı, boşluksuz fatura
                         ↳ kademeler erken/normal/geç 300/400/500€, öğrenci+üye+grup 180€; TRY kur 45.546068 dondu (yeni kur 99.123456 sonrası ödeme 1366382 kuruş); iade [90 50 25 0]%; webhook [paid duplicate already_succeeded]; geçersiz imza 401; fatura boşluğu 0
-F-6     PASS   110ms    Sertifika üretimi (PDF + imzalı QR doğrulama)
-                        ↳ sertifika 16ae8d60: PDF + QR (http://localhost:3000/verify/16ae8d60-66…), imza geçerli, değiştirilmiş imza geçersiz, ödemesiz kullanıcı 422
+F-6     PASS   120ms    Sertifika üretimi (PDF + imzalı QR doğrulama)
+                        ↳ sertifika 9fcea7dc: PDF + QR (http://localhost:3000/verify/9fcea7dc-36…), imza geçerli, değiştirilmiş imza geçersiz, ödemesiz kullanıcı 422
 F-7     PASS   20ms     Raporlar
                         ↳ genel durum, hakem performansı (150 hakem), finans (boşluksuz fatura), CSV (503 satır)
 UI      PASS   0s       Arayüz erişilebilir ve API'ye vekil (proxy)
