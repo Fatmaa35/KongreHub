@@ -311,7 +311,7 @@ func (l *live) reviewerResponds(ctx context.Context) error {
 		}
 		q := 4 + l.rng.IntN(6)
 		body := map[string]any{"originality": q, "significance": q, "methodology": max(1, q-1), "clarity": min(10, q+1),
-			"recommendation": []string{"accept", "minor_revision", "major_revision", "reject"}[l.rng.IntN(4)],
+			"recommendation":     []string{"accept", "minor_revision", "major_revision", "reject"}[l.rng.IntN(4)],
 			"comments_to_author": "Simülatör: bildiri ilginç, deneyler genişletilebilir.", "comments_to_editor": ""}
 		code, err := l.call(ctx, "POST", fmt.Sprintf("/api/reviewer/assignments/%d/review", a.ID), tok, body, nil)
 		if err == nil && code == 201 {
