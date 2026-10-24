@@ -1360,7 +1360,12 @@ func (r *Runner) checkF6() (string, error) {
 	if err != nil || v.M()["valid"] != true {
 		return "", fail("geçerli imza doğrulanmadı: %s", v.Body)
 	}
-	tampered := c.Signature[:len(c.Signature)-2] + "AA"
+	mid := len(c.Signature) / 2
+	flip := byte('A')
+	if c.Signature[mid] == 'A' {
+		flip = 'B'
+	}
+	tampered := c.Signature[:mid] + string(flip) + c.Signature[mid+1:]
 	tv, _ := r.C.Expect(200, "GET", "/api/certificates/verify?id="+c.ID+"&sig="+tampered, "", nil)
 	if tv == nil || tv.M()["valid"] != false {
 		return "", fail("değiştirilmiş imza kabul edildi")

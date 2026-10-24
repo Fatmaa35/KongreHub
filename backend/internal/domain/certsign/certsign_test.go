@@ -30,7 +30,12 @@ func TestSignVerifyAndTamper(t *testing.T) {
 	if s.Verify(tampered, sig) {
 		t.Fatal("tampered kind accepted")
 	}
-	if s.Verify(p, sig[:len(sig)-2]+"AA") || s.Verify(p, "not-base64!!") {
+	mid := len(sig) / 2
+	flip := "A"
+	if sig[mid] == 'A' {
+		flip = "B"
+	}
+	if s.Verify(p, sig[:mid]+flip+sig[mid+1:]) || s.Verify(p, "not-base64!!") {
 		t.Fatal("bad signature accepted")
 	}
 	pub, _ := hex.DecodeString(s.PublicKeyHex())

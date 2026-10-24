@@ -63,7 +63,7 @@ func (s *Signer) PublicKeyHex() string { return hex.EncodeToString(s.pub) }
 
 // VerifyWith verifies using only a public key (offline verification).
 func VerifyWith(pub ed25519.PublicKey, p Payload, sig string) bool {
-	raw, err := base64.RawURLEncoding.DecodeString(sig)
+	raw, err := base64.RawURLEncoding.Strict().DecodeString(sig)
 	if err != nil || len(raw) != ed25519.SignatureSize {
 		return false
 	}
