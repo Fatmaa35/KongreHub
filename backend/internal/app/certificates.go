@@ -16,6 +16,7 @@ import (
 	"github.com/fatmakaplan/kongrehub/internal/audit"
 	"github.com/fatmakaplan/kongrehub/internal/domain/certsign"
 	"github.com/fatmakaplan/kongrehub/internal/httpx"
+	"github.com/fatmakaplan/kongrehub/internal/pdffont"
 )
 
 func (a *App) registerCertificates(r chi.Router) {
@@ -184,8 +185,7 @@ func RenderCertificatePDF(c *certDTO) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	p := fpdf.New("L", "mm", "A4", "")
-	tr := p.UnicodeTranslatorFromDescriptor("cp1254") // Türkçe karakterler
+	p := pdffont.New("L")
 	p.SetTitle("KongreHub Sertifika", true)
 	p.SetAuthor("KongreHub", true)
 	p.SetCreator("KongreHub", true)
@@ -195,32 +195,32 @@ func RenderCertificatePDF(c *certDTO) ([]byte, error) {
 	p.Rect(10, 10, 277, 190, "D")
 	p.SetLineWidth(0.4)
 	p.Rect(14, 14, 269, 182, "D")
-	p.SetFont("Helvetica", "B", 30)
+	p.SetFont(pdffont.Family, "B", 30)
 	p.SetTextColor(30, 64, 120)
 	p.SetXY(20, 35)
 	title := "KATILIM SERTİFİKASI"
 	if c.Kind == "presenter" {
 		title = "SUNUM SERTİFİKASI"
 	}
-	p.CellFormat(257, 14, tr(title), "", 1, "C", false, 0, "")
-	p.SetFont("Helvetica", "", 14)
+	p.CellFormat(257, 14, title, "", 1, "C", false, 0, "")
+	p.SetFont(pdffont.Family, "", 14)
 	p.SetTextColor(60, 60, 60)
 	p.SetX(20)
-	p.CellFormat(257, 10, tr("Bu belge aşağıda adı geçen kişinin"), "", 1, "C", false, 0, "")
-	p.SetFont("Helvetica", "B", 26)
+	p.CellFormat(257, 10, "Bu belge aşağıda adı geçen kişinin", "", 1, "C", false, 0, "")
+	p.SetFont(pdffont.Family, "B", 26)
 	p.SetTextColor(20, 20, 20)
 	p.SetX(20)
-	p.CellFormat(257, 18, tr(c.Holder), "", 1, "C", false, 0, "")
-	p.SetFont("Helvetica", "", 14)
+	p.CellFormat(257, 18, c.Holder, "", 1, "C", false, 0, "")
+	p.SetFont(pdffont.Family, "", 14)
 	p.SetTextColor(60, 60, 60)
 	p.SetX(40)
-	p.MultiCell(217, 8, tr(fmt.Sprintf("Uluslararası KongreHub Bilimsel Kongresi'ne (10–12 Mayıs 2027, İstanbul) katıldığını onaylar.\n%s", c.Detail)), "", "C", false)
+	p.MultiCell(217, 8, fmt.Sprintf("Uluslararası KongreHub Bilimsel Kongresi'ne (10–12 Mayıs 2027, İstanbul) katıldığını onaylar.\n%s", c.Detail), "", "C", false)
 	p.RegisterImageOptionsReader("qr", fpdf.ImageOptions{ImageType: "PNG"}, bytes.NewReader(png))
 	p.ImageOptions("qr", 235, 140, 40, 40, false, fpdf.ImageOptions{ImageType: "PNG"}, 0, "")
-	p.SetFont("Helvetica", "", 8)
+	p.SetFont(pdffont.Family, "", 8)
 	p.SetXY(20, 165)
-	p.MultiCell(200, 4.5, tr(fmt.Sprintf("Sertifika No: %s\nDüzenlenme: %s\nDoğrulama: QR kodu okutun veya %s\nEd25519 imzası: %s",
-		c.ID, c.IssuedAt.Format("2006-01-02 15:04 UTC"), c.VerifyURL[:min(len(c.VerifyURL), 60)]+"…", c.Signature[:24]+"…")), "", "L", false)
+	p.MultiCell(200, 4.5, fmt.Sprintf("Sertifika No: %s\nDüzenlenme: %s\nDoğrulama: QR kodu okutun veya %s\nEd25519 imzası: %s",
+		c.ID, c.IssuedAt.Format("2006-01-02 15:04 UTC"), c.VerifyURL[:min(len(c.VerifyURL), 60)]+"…", c.Signature[:24]+"…"), "", "L", false)
 	var buf bytes.Buffer
 	if err := p.Output(&buf); err != nil {
 		return nil, err

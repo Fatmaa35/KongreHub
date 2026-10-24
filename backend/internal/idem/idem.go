@@ -1,12 +1,12 @@
 // Package idem implements the Idempotency-Key contract for state-changing
 // POST requests.
 //
-//	1. (kullanıcı, anahtar) satırı INSERT … ON CONFLICT DO NOTHING ile ayrılır.
-//	2. Satırı ilk ayıran isteği işler; yanıt (durum + gövde) satıra yazılır.
-//	3. Aynı anahtarla gelen tekrar istek kaydedilmiş yanıtı aynen döner
-//	   (Idempotent-Replayed: true). Gövde farklıysa 422, ilk istek hâlâ
-//	   sürüyorsa 409 döner. 5xx yanıtlar saklanmaz; satır silinir ve istemci
-//	   yeniden deneyebilir.
+//  1. (kullanıcı, anahtar) satırı INSERT … ON CONFLICT DO NOTHING ile ayrılır.
+//  2. Satırı ilk ayıran isteği işler; yanıt (durum + gövde) satıra yazılır.
+//  3. Aynı anahtarla gelen tekrar istek kaydedilmiş yanıtı aynen döner
+//     (Idempotent-Replayed: true). Gövde farklıysa 422, ilk istek hâlâ
+//     sürüyorsa 409 döner. 5xx yanıtlar saklanmaz; satır silinir ve istemci
+//     yeniden deneyebilir.
 package idem
 
 import (

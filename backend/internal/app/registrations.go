@@ -70,7 +70,7 @@ func (a *App) currentFX(w http.ResponseWriter, r *http.Request) error {
 
 type quoteRequest struct {
 	Currency  string `json:"currency"`
-	Student   *bool  `json:"student"`    // yalnızca kayıt görevlisi senaryo için verebilir
+	Student   *bool  `json:"student"` // yalnızca kayıt görevlisi senaryo için verebilir
 	Member    *bool  `json:"member"`
 	GroupSize int    `json:"group_size"`
 	At        string `json:"at"` // RFC3339; boşsa şimdi (yalnızca hesap önizleme)
@@ -511,12 +511,12 @@ func randHex(n int) string {
 
 // ProcessPaymentEvent applies a provider event exactly once.
 //
-//	1. payment_events(event_id) satırı ON CONFLICT DO NOTHING ile eklenir;
-//	   eklenemezse olay daha önce işlenmiştir → "duplicate".
-//	2. Ödeme satırı FOR UPDATE kilitlenir; zaten sonuçlanmışsa olay yok sayılır
-//	   (ör. başarılıdan sonra gelen gecikmiş "failed").
-//	3. Başarılıysa kayıt "paid" olur ve aynı transaction'da boşluksuz fatura
-//	   numarası alınır (sayaç satırı kilitlenir; geri alınırsa numara da geri alınır).
+//  1. payment_events(event_id) satırı ON CONFLICT DO NOTHING ile eklenir;
+//     eklenemezse olay daha önce işlenmiştir → "duplicate".
+//  2. Ödeme satırı FOR UPDATE kilitlenir; zaten sonuçlanmışsa olay yok sayılır
+//     (ör. başarılıdan sonra gelen gecikmiş "failed").
+//  3. Başarılıysa kayıt "paid" olur ve aynı transaction'da boşluksuz fatura
+//     numarası alınır (sayaç satırı kilitlenir; geri alınırsa numara da geri alınır).
 func (a *App) ProcessPaymentEvent(ctx context.Context, ev PaymentEvent) (string, error) {
 	if ev.EventID == "" || ev.ProviderRef == "" || (ev.Type != "payment.succeeded" && ev.Type != "payment.failed") {
 		return "", httpx.Validation("geçersiz ödeme olayı")

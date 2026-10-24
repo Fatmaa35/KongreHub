@@ -98,16 +98,16 @@ func (a *App) reportReviewers(w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 	type row struct {
-		ID          int64   `json:"id"`
-		Name        string  `json:"full_name"`
-		Load        int     `json:"current_load"`
-		MaxLoad     int     `json:"max_load"`
-		Completed   int     `json:"completed"`
-		Open        int     `json:"open"`
-		Expired     int     `json:"expired"`
-		Overdue     int     `json:"overdue"`
-		AvgDays     float64 `json:"avg_days_to_review"`
-		Reminders   int     `json:"reminders_received"`
+		ID        int64   `json:"id"`
+		Name      string  `json:"full_name"`
+		Load      int     `json:"current_load"`
+		MaxLoad   int     `json:"max_load"`
+		Completed int     `json:"completed"`
+		Open      int     `json:"open"`
+		Expired   int     `json:"expired"`
+		Overdue   int     `json:"overdue"`
+		AvgDays   float64 `json:"avg_days_to_review"`
+		Reminders int     `json:"reminders_received"`
 	}
 	items, err := pgx.CollectRows(rows, pgx.RowToStructByPos[row])
 	if err != nil {
@@ -177,7 +177,7 @@ func (a *App) reportFinance(w http.ResponseWriter, r *http.Request) error {
 	rows.Close()
 	httpx.WriteJSON(w, 200, map[string]any{
 		"revenue": revenue, "refunds": refunds, "registrations_by_status": byStatus,
-		"invoices": map[string]any{"count": invoices, "max_seq": maxSeq, "gap_free": invoices == maxSeq},
+		"invoices":       map[string]any{"count": invoices, "max_seq": maxSeq, "gap_free": invoices == maxSeq},
 		"payment_events": events,
 	})
 	return nil
@@ -237,11 +237,11 @@ func (a *App) live(w http.ResponseWriter, r *http.Request) error {
 	_ = a.Pool.QueryRow(ctx, `SELECT count(*)::int FROM audit_log WHERE at > now() - interval '1 minute'`).Scan(&perMin)
 	rate, at, _ := a.latestRate(ctx, a.Pool)
 	httpx.WriteJSON(w, 200, map[string]any{
-		"counts":            map[string]int{"submissions": subs, "registrations": regs, "paid_registrations": paid, "open_assignments": assignments, "reviews": reviews},
-		"events_per_minute": perMin,
-		"recent_events":     events,
-		"fx":                map[string]any{"rate": strings.TrimSpace(rate.String()), "observed_at": at},
-		"server_time":       a.Clock.Now().UTC(),
+		"counts":             map[string]int{"submissions": subs, "registrations": regs, "paid_registrations": paid, "open_assignments": assignments, "reviews": reviews},
+		"events_per_minute":  perMin,
+		"recent_events":      events,
+		"fx":                 map[string]any{"rate": strings.TrimSpace(rate.String()), "observed_at": at},
+		"server_time":        a.Clock.Now().UTC(),
 		"clock_offset_hours": a.Clock.Offset().Hours(),
 	})
 	return nil

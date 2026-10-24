@@ -114,11 +114,11 @@ type Assignment struct {
 }
 
 type Review struct {
-	AssignmentID   int64     `json:"assignment_id"`
+	AssignmentID   int64         `json:"assignment_id"`
 	Scores         review.Scores `json:"scores"`
-	Recommendation string    `json:"recommendation"`
-	Comment        string    `json:"comment"`
-	SubmittedAt    time.Time `json:"submitted_at"`
+	Recommendation string        `json:"recommendation"`
+	Comment        string        `json:"comment"`
+	SubmittedAt    time.Time     `json:"submitted_at"`
 }
 
 type Decision struct {
@@ -147,14 +147,14 @@ type FX struct {
 }
 
 type Registration struct {
-	ID        int64          `json:"id"`
-	UserID    int64          `json:"user_id"`
-	GroupID   int64          `json:"group_id"`
-	Currency  string         `json:"currency"`
-	Quote     pricing.Quote  `json:"quote"`
-	Status    string         `json:"status"` // pending | paid | refunded
-	CreatedAt time.Time      `json:"created_at"`
-	PaidAt    *time.Time     `json:"paid_at"`
+	ID        int64               `json:"id"`
+	UserID    int64               `json:"user_id"`
+	GroupID   int64               `json:"group_id"`
+	Currency  string              `json:"currency"`
+	Quote     pricing.Quote       `json:"quote"`
+	Status    string              `json:"status"` // pending | paid | refunded
+	CreatedAt time.Time           `json:"created_at"`
+	PaidAt    *time.Time          `json:"paid_at"`
 	Refund    *pricing.RefundRule `json:"refund"`
 }
 

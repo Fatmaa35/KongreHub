@@ -401,19 +401,19 @@ type fileDTO struct {
 }
 
 type reviewDTO struct {
-	Reviewer          string    `json:"reviewer"`                    // yazar için "Hakem A"
-	ReviewerID        int64     `json:"reviewer_id,omitempty"`       // yalnızca editör
-	ReviewerName      string    `json:"reviewer_name,omitempty"`     // yalnızca editör
-	Round             int       `json:"round"`
-	Originality       int       `json:"originality"`
-	Significance      int       `json:"significance"`
-	Methodology       int       `json:"methodology"`
-	Clarity           int       `json:"clarity"`
-	Weighted          float64   `json:"weighted_score"`
-	Recommendation    string    `json:"recommendation"`
-	CommentsToAuthor  string    `json:"comments_to_author"`
-	CommentsToEditor  string    `json:"comments_to_editor,omitempty"` // yalnızca editör
-	SubmittedAt       time.Time `json:"submitted_at"`
+	Reviewer         string    `json:"reviewer"`                // yazar için "Hakem A"
+	ReviewerID       int64     `json:"reviewer_id,omitempty"`   // yalnızca editör
+	ReviewerName     string    `json:"reviewer_name,omitempty"` // yalnızca editör
+	Round            int       `json:"round"`
+	Originality      int       `json:"originality"`
+	Significance     int       `json:"significance"`
+	Methodology      int       `json:"methodology"`
+	Clarity          int       `json:"clarity"`
+	Weighted         float64   `json:"weighted_score"`
+	Recommendation   string    `json:"recommendation"`
+	CommentsToAuthor string    `json:"comments_to_author"`
+	CommentsToEditor string    `json:"comments_to_editor,omitempty"` // yalnızca editör
+	SubmittedAt      time.Time `json:"submitted_at"`
 }
 
 type assignmentDTO struct {
@@ -437,24 +437,24 @@ type decisionDTO struct {
 }
 
 type submissionDTO struct {
-	ID              int64            `json:"id"`
-	Title           string           `json:"title"`
-	Abstract        string           `json:"abstract"`
-	Keywords        []string         `json:"keywords"`
-	Status          string           `json:"status"`
-	Round           int              `json:"round"`
-	CurrentVersion  int              `json:"current_version"`
-	DurationMinutes int              `json:"duration_minutes"`
-	FinalScore      *float64         `json:"final_score,omitempty"`
-	Disagreement    *bool            `json:"disagreement_flag,omitempty"`
-	CreatedAt       time.Time        `json:"created_at"`
-	Authors         []authorDTO      `json:"authors,omitempty"`
-	Files           []fileDTO        `json:"files"`
-	Reviews         []reviewDTO      `json:"reviews,omitempty"`
-	Decisions       []decisionDTO    `json:"decisions,omitempty"`
-	Assignments     []assignmentDTO  `json:"assignments,omitempty"`
+	ID              int64             `json:"id"`
+	Title           string            `json:"title"`
+	Abstract        string            `json:"abstract"`
+	Keywords        []string          `json:"keywords"`
+	Status          string            `json:"status"`
+	Round           int               `json:"round"`
+	CurrentVersion  int               `json:"current_version"`
+	DurationMinutes int               `json:"duration_minutes"`
+	FinalScore      *float64          `json:"final_score,omitempty"`
+	Disagreement    *bool             `json:"disagreement_flag,omitempty"`
+	CreatedAt       time.Time         `json:"created_at"`
+	Authors         []authorDTO       `json:"authors,omitempty"`
+	Files           []fileDTO         `json:"files"`
+	Reviews         []reviewDTO       `json:"reviews,omitempty"`
+	Decisions       []decisionDTO     `json:"decisions,omitempty"`
+	Assignments     []assignmentDTO   `json:"assignments,omitempty"`
 	Aggregate       *review.Aggregate `json:"aggregate,omitempty"`
-	MyAssignmentID  int64            `json:"my_assignment_id,omitempty"`
+	MyAssignmentID  int64             `json:"my_assignment_id,omitempty"`
 }
 
 func (a *App) getSubmission(w http.ResponseWriter, r *http.Request) error {

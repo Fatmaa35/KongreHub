@@ -21,5 +21,5 @@ func serveDocs(w http.ResponseWriter, _ *http.Request) {
 <script>SwaggerUIBundle({url:'/openapi.yaml',dom_id:'#ui'})</script></body></html>`))
 }
 
-func strconvF(f float64) string           { return strconv.FormatFloat(f, 'f', -1, 64) }
-func parseF(s string) (float64, error)    { return strconv.ParseFloat(s, 64) }
+func strconvF(f float64) string        { return strconv.FormatFloat(f, 'f', -1, 64) }
+func parseF(s string) (float64, error) { return strconv.ParseFloat(s, 64) }

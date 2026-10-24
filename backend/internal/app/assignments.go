@@ -238,8 +238,9 @@ func keysOf(m map[int64]int) []int64 {
 }
 
 // loadPapersForRun returns papers needing reviewers.
-//   pending: 'submitted' veya 'under_review' (tur 1) olup aktif hakem sayısı 3'ün altında olanlar
-//   all:     geri çekilmemiş tüm bildiriler, mevcut atamalar yok sayılarak (ölçüm/dry-run)
+//
+//	pending: 'submitted' veya 'under_review' (tur 1) olup aktif hakem sayısı 3'ün altında olanlar
+//	all:     geri çekilmemiş tüm bildiriler, mevcut atamalar yok sayılarak (ölçüm/dry-run)
 func loadPapersForRun(ctx context.Context, q db.Querier, scope string) ([]assignment.Paper, error) {
 	var sql string
 	if scope == "all" {

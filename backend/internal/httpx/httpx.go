@@ -41,7 +41,7 @@ var (
 	ErrInternal     = E(http.StatusInternalServerError, "internal", "beklenmeyen bir hata oluştu")
 )
 
-func Validation(msg string) *Error { return E(http.StatusBadRequest, "validation_error", msg) }
+func Validation(msg string) *Error     { return E(http.StatusBadRequest, "validation_error", msg) }
 func Conflict(code, msg string) *Error { return E(http.StatusConflict, code, msg) }
 
 // WriteJSON writes v with status.
@@ -131,7 +131,9 @@ func PageParams(r *http.Request) (limit int, after int64, err error) {
 }
 
 // Cursor encodes an id cursor.
-func Cursor(id int64) string { return base64.RawURLEncoding.EncodeToString([]byte(strconv.FormatInt(id, 10))) }
+func Cursor(id int64) string {
+	return base64.RawURLEncoding.EncodeToString([]byte(strconv.FormatInt(id, 10)))
+}
 
 // IDParam parses a positive integer path value.
 func IDParam(s string) (int64, error) {

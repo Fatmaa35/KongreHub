@@ -10,21 +10,21 @@ import (
 )
 
 type Config struct {
-	DatabaseURL          string
-	HTTPAddr             string
-	JWTSecret            string
-	AccessTTL            time.Duration
-	RefreshTTL           time.Duration
-	CertSigningSeed      string
-	WebhookSecret        string
-	PublicURL            string
-	StorageDir           string
-	DemoMode             bool
-	JobInterval          time.Duration
-	RequestTimeout       time.Duration
-	MaxUploadBytes       int64
-	CORSOrigins          []string
-	LogLevel             string
+	DatabaseURL     string
+	HTTPAddr        string
+	JWTSecret       string
+	AccessTTL       time.Duration
+	RefreshTTL      time.Duration
+	CertSigningSeed string
+	WebhookSecret   string
+	PublicURL       string
+	StorageDir      string
+	DemoMode        bool
+	JobInterval     time.Duration
+	RequestTimeout  time.Duration
+	MaxUploadBytes  int64
+	CORSOrigins     []string
+	LogLevel        string
 }
 
 func env(k, def string) string {

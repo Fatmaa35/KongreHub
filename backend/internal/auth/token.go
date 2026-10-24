@@ -26,7 +26,9 @@ type Principal struct {
 type ctxKey struct{}
 
 // WithPrincipal stores p in ctx.
-func WithPrincipal(ctx context.Context, p Principal) context.Context { return context.WithValue(ctx, ctxKey{}, p) }
+func WithPrincipal(ctx context.Context, p Principal) context.Context {
+	return context.WithValue(ctx, ctxKey{}, p)
+}
 
 // From returns the principal (ok=false for anonymous).
 func From(ctx context.Context) (Principal, bool) {

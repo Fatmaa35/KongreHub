@@ -29,19 +29,19 @@ func (a *App) registerReviews(r chi.Router) {
 
 // Hakem görünümü: yalnızca bildirinin içeriği; yazar, kurum, dosya adı yok.
 type reviewerAssignmentDTO struct {
-	ID              int64      `json:"id"`
-	SubmissionID    int64      `json:"submission_id"`
-	Title           string     `json:"title"`
-	Abstract        string     `json:"abstract"`
-	Keywords        []string   `json:"keywords"`
-	Round           int        `json:"round"`
-	Version         int        `json:"version"`
-	Status          string     `json:"status"`
-	AssignedAt      time.Time  `json:"assigned_at"`
-	DueAt           time.Time  `json:"due_at"`
-	DaysLeft        int        `json:"days_left"`
-	ResponseLetter  string     `json:"response_letter,omitempty"`
-	MyReview        *reviewDTO `json:"my_review,omitempty"`
+	ID             int64      `json:"id"`
+	SubmissionID   int64      `json:"submission_id"`
+	Title          string     `json:"title"`
+	Abstract       string     `json:"abstract"`
+	Keywords       []string   `json:"keywords"`
+	Round          int        `json:"round"`
+	Version        int        `json:"version"`
+	Status         string     `json:"status"`
+	AssignedAt     time.Time  `json:"assigned_at"`
+	DueAt          time.Time  `json:"due_at"`
+	DaysLeft       int        `json:"days_left"`
+	ResponseLetter string     `json:"response_letter,omitempty"`
+	MyReview       *reviewDTO `json:"my_review,omitempty"`
 }
 
 func (a *App) myAssignments(w http.ResponseWriter, r *http.Request) error {
