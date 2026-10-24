@@ -181,6 +181,16 @@ func orderTalks(papers []*Paper, slot Slot, people map[int64]Person) ([]Talk, bo
 	return best, ok
 }
 
+// OrderTalks is the exported form used when an editor moves a session to a
+// new slot (sürükle-bırak): konuşma saatleri yeni dilime göre yeniden dizilir.
+func OrderTalks(papers []Paper, slot Slot, people map[int64]Person) ([]Talk, bool) {
+	ps := make([]*Paper, len(papers))
+	for i := range papers {
+		ps[i] = &papers[i]
+	}
+	return orderTalks(ps, slot, people)
+}
+
 // ---- 1. gruplama ------------------------------------------------------------
 
 type group struct {
