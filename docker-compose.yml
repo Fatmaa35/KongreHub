@@ -1,0 +1,123 @@
+# KongreHub — tek komut: cp .env.example .env && docker compose up --build
+name: kongrehub
+
+x-backend-env: &backend-env
+  DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?sslmode=disable
+  STORAGE_DIR: /data/uploads
+  JWT_SECRET: ${JWT_SECRET}
+  CERT_SIGNING_SEED: ${CERT_SIGNING_SEED}
+  PAYMENT_WEBHOOK_SECRET: ${PAYMENT_WEBHOOK_SECRET}
+  PUBLIC_URL: ${PUBLIC_URL}
+  DEMO_MODE: ${DEMO_MODE}
+  LOG_LEVEL: ${LOG_LEVEL:-info}
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+    # host'a port açılmaz; yalnızca compose ağından erişilir
+
+  migrate:
+    build: { context: ./backend, target: api }
+    image: kongrehub/api:local
+    command: ["migrate"]
+    environment: *backend-env
+    depends_on:
+      db: { condition: service_healthy }
+    restart: "no"
+
+  api:
+    image: kongrehub/api:local
+    build: { context: ./backend, target: api }
+    environment:
+      <<: *backend-env
+      HTTP_ADDR: ":8080"
+      JOB_INTERVAL: ${JOB_INTERVAL:-1m}
+      CORS_ORIGINS: http://localhost:3000
+    ports:
+      - "8080:8080"
+    volumes:
+      - uploads:/data/uploads
+    depends_on:
+      db: { condition: service_healthy }
+      migrate: { condition: service_completed_successfully }
+    healthcheck:
+      test: ["CMD", "/app/api", "healthcheck"]
+      interval: 5s
+      timeout: 4s
+      retries: 20
+      start_period: 5s
+    restart: unless-stopped
+
+  simulator:
+    build: { context: ./backend, target: simulator }
+    image: kongrehub/simulator:local
+    environment:
+      <<: *backend-env
+      API_URL: http://api:8080
+      SEED: ${SEED:-42}
+      LIVE_ENABLED: ${LIVE_ENABLED:-true}
+      LIVE_INTERVAL: ${LIVE_INTERVAL:-4s}
+    volumes:
+      - uploads:/data/uploads
+    depends_on:
+      api: { condition: service_healthy }
+    healthcheck:
+      test: ["CMD", "/app/simulator", "healthcheck"]
+      interval: 3s
+      timeout: 3s
+      retries: 40
+      start_period: 3s
+    restart: unless-stopped
+
+  frontend:
+    build: { context: ./frontend }
+    image: kongrehub/frontend:local
+    ports:
+      - "3000:8080"
+    depends_on:
+      api: { condition: service_healthy }
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8080/ >/dev/null || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  verify:
+    profiles: ["verify"]
+    build: { context: ./backend, target: verify }
+    image: kongrehub/verify:local
+    environment:
+      API_URL: http://api:8080
+      FRONTEND_URL: http://frontend:8080
+      PAYMENT_WEBHOOK_SECRET: ${PAYMENT_WEBHOOK_SECRET}
+    depends_on:
+      api: { condition: service_healthy }
+      simulator: { condition: service_healthy }
+      frontend: { condition: service_healthy }
+
+  k6:
+    profiles: ["load"]
+    image: grafana/k6:0.54.0
+    volumes:
+      - ./load:/scripts:ro
+    environment:
+      BASE_URL: http://api:8080
+    command: ["run", "--summary-export=/scripts/results/summary.json", "/scripts/load.js"]
+    depends_on:
+      api: { condition: service_healthy }
+      simulator: { condition: service_healthy }
+
+volumes:
+  pgdata:
+  uploads:

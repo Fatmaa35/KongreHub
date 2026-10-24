@@ -420,7 +420,7 @@ func Generate(seedVal uint64, ref time.Time) *Dataset {
 		abstract := fmt.Sprintf("We study %s with a focus on %s. Our method combines ideas from %s and is evaluated on public benchmarks, "+
 			"showing consistent improvements over strong baselines while remaining reproducible. Code and data are released.", kw[0], strings.Join(kw[1:], ", "), topics[t].Name)
 		s := Submission{ID: int64(i + 1), Title: title, Abstract: abstract, Keywords: keywords.Normalize(kw), SubmitterID: authors[0].UserID, Authors: authors,
-			Duration: []int{15, 20, 20, 20, 30}[rng.IntN(5)], Audience: 20 + rng.IntN(160) + int(30*math.Sin(float64(t))), Status: "submitted", Round: 1,
+			Duration: []int{15, 20, 20, 20, 30}[rng.IntN(5)], Audience: 20 + rng.IntN(90) + int(25*math.Sin(float64(t))), Status: "submitted", Round: 1,
 			CreatedAt: ref.Add(-time.Duration(40+rng.IntN(30)) * 24 * time.Hour).Add(time.Duration(rng.IntN(1440)) * time.Minute)}
 		if s.Audience < 15 {
 			s.Audience = 15

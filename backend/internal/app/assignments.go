@@ -168,6 +168,9 @@ func (a *App) RunAutoAssign(ctx context.Context, p auth.Principal, in AutoAssign
 			resp.Unassigned = []assignment.Unassigned{}
 		}
 		resp.Violations = assignment.Validate(papers, reviewers, cf, opt, res.Pairs)
+		if resp.Violations == nil {
+			resp.Violations = []string{}
+		}
 		resp.Pairs = res.Pairs
 		if len(resp.Violations) > 0 {
 			return fmt.Errorf("atama doğrulaması başarısız: %v", resp.Violations[0])
