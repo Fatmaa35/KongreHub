@@ -41,8 +41,10 @@ jobs:
         with:
           version: v1.64.8
           working-directory: backend
-      - name: Testler (birim + PostgreSQL entegrasyon + make verify paketi)
-        run: go test ./... -count=1 -race -coverprofile=coverage.out -coverpkg=./internal/domain/...
+      - name: T-1 performans kanıtı (500 bildiri x 150 hakem < 20 sn, -race olmadan)
+        run: go test ./internal/domain/assignment -run TestScale500x150 -count=1 -v
+      - name: Testler (birim + PostgreSQL entegrasyon + make verify paketi, -race ile)
+        run: go test ./... -count=1 -race -timeout 15m -coverprofile=coverage.out -coverpkg=./internal/domain/...
       - name: Domain kapsama raporu (≥ %70)
         run: |
           go tool cover -func=coverage.out | tee coverage.txt

@@ -314,7 +314,7 @@ func (r *Runner) checkT1() (string, error) {
 	if dry.Stats.Papers < 500 || dry.Stats.Reviewers < 150 {
 		return "", fail("ölçek yetersiz: %d bildiri %d hakem", dry.Stats.Papers, dry.Stats.Reviewers)
 	}
-	if elapsed > 20*time.Second {
+	if elapsed > 20*time.Second && !RaceEnabled {
 		return "", fail("atama %v sürdü (> 20 sn)", elapsed)
 	}
 	if len(dry.Violations) > 0 {
