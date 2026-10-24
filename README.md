@@ -1,6 +1,6 @@
 # KongreHub — Bilimsel Kongre, Bildiri ve Program Yönetim Sistemi
 
-**Geliştiren:** Fatma Kaplan · DDO Yazılım Ekibi alım projesi
+**Geliştiren:** Fatma Kaplan ([@Fatmaa35](https://github.com/Fatmaa35)) · DDO Yazılım Ekibi alım projesi · Depo: https://github.com/Fatmaa35/KongreHub
 
 KongreHub; bildiri gönderimini, **çift kör** hakem değerlendirmesini, otomatik hakem atamasını, kısıtlı program çizelgelemeyi, kademeli kayıt ücretlerini ve imzalı sertifikaları yöneten, Docker ile tek komutla ayağa kalkan bir sistemdir.
 
@@ -12,7 +12,7 @@ KongreHub; bildiri gönderimini, **çift kör** hakem değerlendirmesini, otomat
 ## 1. Kurulum ve çalıştırma
 
 ```bash
-git clone https://github.com/<kullanici>/ddo-case-fatma-kaplan.git && cd ddo-case-fatma-kaplan
+git clone https://github.com/Fatmaa35/KongreHub.git && cd KongreHub
 cp .env.example .env
 docker compose up --build
 ```
@@ -94,6 +94,15 @@ scripts/             chaos.sh, explain.sql, gen_openapi.py
 
 Rol başına farklı ekranlar ve yoğun sunucu durumu (sayfalama, periyodik canlı yenileme, mutasyon sonrası önbellek geçersizleme) var. TanStack Query bu durumları tek tip yönetiyor. Her ekrandaki *yükleniyor / boş / hata* durumu tek bir `QueryState` bileşeninde standartlaştırıldı. TypeScript, API sözleşmesi hatalarını derleme anında yakalıyor. Vite derlemesi ~2 sn sürüyor. nginx `/api` isteklerini API'ye aktarıyor, böylece tarayıcı tek origin ile çalışıyor (CORS gerekmiyor). Gerekçeler ve alternatifler: [ADR-007](DECISIONS.md#adr-007--frontend-react--vite--typescript--tanstack-query).
 
+
+### Arayüz tasarımı ve kullanıcı deneyimi
+
+- **Görsel kimlik:** Kongrenin İstanbul'da olmasından yola çıkarak İznik çinisi renkleri seçildi: kobalt (ana renk), turkuaz (ikincil), çini kırmızısı (yalnızca hata ve uyarı). Başlıklarda Bricolage Grotesque, metinde Figtree kullanılıyor.
+- **Yaka kartı:** Kenar çubuğunun üstünde, rol rengine bürünen bir kongre yaka kartı kim olduğunuzu ve hangi rolle çalıştığınızı her an gösteriyor. Giriş ekranı da "yaka kartınızı seçin" mantığıyla tek tıkla demo girişi sunuyor.
+- **Yönlendiren genel bakış:** Her role kendi "sırada ne var" adımları gösteriliyor. Hakem, süresi en yakın değerlendirmelerini ilk bakışta görüyor. Canlı akışta yeni olaylar kısa süre vurgulanıyor.
+- **Süreç görünürlüğü:** Bildiri sayfasında yaşam döngüsü adım çizgisi var (gönderildi → hakem incelemesi → düzeltme turu → karar).
+- **Geri bildirim:** Her işlem sonrası bildirim (toast) çıkıyor. Tarayıcının `confirm()` penceresi yerine sonucu açıklayan bir onay penceresi açılıyor (ör. iptalde iade tutarı). Yüklenirken iskelet yükleyiciler, boş ekranlarda ne yapılacağını söyleyen durumlar gösteriliyor.
+- **Erişilebilirlik:** Simgeli gezinme, mobilde kayan çekmece menü, görünür klavye odağı ve `prefers-reduced-motion` desteği.
 ---
 
 ## 3. Zorlu görevler — nasıl çözüldü?
