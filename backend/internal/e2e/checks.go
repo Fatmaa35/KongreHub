@@ -41,13 +41,13 @@ type Runner struct {
 	tok         map[string]string
 	Log         func(string, ...any)
 
-	flowSub      int64              // F-1'de oluşturulan bildiri
-	flowAuthorTok string            // bu çalıştırma için oluşturulan yazar hesabı
-	flowAuthors  []string           // yazar adları/e-postaları (sızıntı taraması)
-	flowRevs     map[int64]string   // reviewer id → email
-	flowRevNames []string
-	assignOf     map[string]int64   // reviewer email → assignment id
-	stage        string
+	flowSub       int64            // F-1'de oluşturulan bildiri
+	flowAuthorTok string           // bu çalıştırma için oluşturulan yazar hesabı
+	flowAuthors   []string         // yazar adları/e-postaları (sızıntı taraması)
+	flowRevs      map[int64]string // reviewer id → email
+	flowRevNames  []string
+	assignOf      map[string]int64 // reviewer email → assignment id
+	stage         string
 }
 
 func NewRunner(base, frontend string) *Runner {
@@ -273,7 +273,7 @@ func statusOf(r *Resp, err error) string {
 type assignResp struct {
 	Stats struct {
 		Papers, Reviewers, Assigned, Requested, LoadMin, LoadMax int
-		DurationMS                                               int64 `json:"duration_ms"`
+		DurationMS                                               int64   `json:"duration_ms"`
 		MeanScore                                                float64 `json:"mean_score"`
 	} `json:"stats"`
 	Unassigned []struct {
@@ -283,10 +283,6 @@ type assignResp struct {
 	} `json:"unassigned"`
 	Violations []string `json:"violations"`
 	Created    int      `json:"created"`
-}
-
-func (a *assignResp) fix() {
-	// JSON alan adları snake_case
 }
 
 func (r *Runner) autoAssign(body map[string]any) (*assignResp, *Resp, error) {
@@ -564,7 +560,9 @@ func (r *Runner) assignFlowReviewers(n int) error {
 	}
 	more, _, _ := r.reviewers("deep learning")
 	cands = append(cands, more...)
-	sort.SliceStable(cands, func(i, j int) bool { return cands[i].MaxLoad-cands[i].CurrentLoad > cands[j].MaxLoad-cands[j].CurrentLoad })
+	sort.SliceStable(cands, func(i, j int) bool {
+		return cands[i].MaxLoad-cands[i].CurrentLoad > cands[j].MaxLoad-cands[j].CurrentLoad
+	})
 	for _, c := range cands {
 		if len(r.flowRevs) >= n {
 			break
@@ -588,9 +586,9 @@ func (r *Runner) assignFlowReviewers(n int) error {
 }
 
 type editorView struct {
-	Status      string `json:"status"`
-	Round       int    `json:"round"`
-	Disagree    *bool  `json:"disagreement_flag"`
+	Status      string   `json:"status"`
+	Round       int      `json:"round"`
+	Disagree    *bool    `json:"disagreement_flag"`
 	FinalScore  *float64 `json:"final_score"`
 	Assignments []struct {
 		ID         int64  `json:"id"`
@@ -965,8 +963,8 @@ func (r *Runner) checkF4() (string, error) {
 	}
 	var p struct {
 		Sessions []struct {
-			ID    int64 `json:"id"`
-			Talks []any `json:"talks"`
+			ID    int64  `json:"id"`
+			Talks []any  `json:"talks"`
 			Chair string `json:"chair"`
 		} `json:"sessions"`
 	}
@@ -1067,12 +1065,12 @@ func (r *Runner) newUser(role string, student bool) (string, string, error) {
 }
 
 type regView struct {
-	ID         int64  `json:"id"`
-	Tier       string `json:"tier"`
-	Currency   string `json:"currency"`
-	FXRate     string `json:"fx_rate"`
-	TotalCents int64  `json:"total_cents"`
-	Status     string `json:"status"`
+	ID         int64   `json:"id"`
+	Tier       string  `json:"tier"`
+	Currency   string  `json:"currency"`
+	FXRate     string  `json:"fx_rate"`
+	TotalCents int64   `json:"total_cents"`
+	Status     string  `json:"status"`
 	Invoice    *string `json:"invoice_number"`
 	Breakdown  []struct {
 		Code string `json:"code"`

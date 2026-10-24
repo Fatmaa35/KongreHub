@@ -18,11 +18,11 @@ import (
 
 // Client is a tiny JSON HTTP client.
 type Client struct {
-	Base    string
-	HTTP    *http.Client
-	keySeq  atomic.Int64
-	runID   string
-	tokens  map[string]string
+	Base   string
+	HTTP   *http.Client
+	keySeq atomic.Int64
+	runID  string
+	tokens map[string]string
 }
 
 func NewClient(base string) *Client {
@@ -32,9 +32,9 @@ func NewClient(base string) *Client {
 
 // Resp is a decoded response.
 type Resp struct {
-	Status  int
-	Body    []byte
-	Header  http.Header
+	Status int
+	Body   []byte
+	Header http.Header
 }
 
 func (r *Resp) JSON(v any) error { return json.Unmarshal(r.Body, v) }

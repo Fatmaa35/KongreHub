@@ -51,12 +51,26 @@ func WriteJSON(w http.ResponseWriter, status int, v any) {
 	_ = json.NewEncoder(w).Encode(v)
 }
 
+// Classify maps infrastructure errors (ör. veritabanına ulaşılamıyor) to API
+// errors; app paketi pgx'e özgü kontrolü buraya bağlar.
+var Classify = func(error) *Error { return nil }
+
+// ErrUnavailable is returned while a dependency is down (kaos senaryosu).
+var ErrUnavailable = E(http.StatusServiceUnavailable, "dependency_unavailable", "hizmet geçici olarak kullanılamıyor, lütfen tekrar deneyin")
+
 // WriteError renders any error as {"error":{code,message}}; unknown errors
 // become 500 without leaking internals.
 func WriteError(w http.ResponseWriter, err error) {
 	var e *Error
 	if !errors.As(err, &e) {
-		e = ErrInternal
+		if c := Classify(err); c != nil {
+			e = c
+		} else {
+			e = ErrInternal
+		}
+	}
+	if e.Status == http.StatusServiceUnavailable {
+		w.Header().Set("Retry-After", "2")
 	}
 	WriteJSON(w, e.Status, map[string]any{"error": e})
 }

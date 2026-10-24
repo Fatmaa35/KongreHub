@@ -1,0 +1,117 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Backend (lint + test + kapsama)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: kongrehub_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 3s --health-timeout 3s --health-retries 20
+    defaults:
+      run:
+        working-directory: backend
+    env:
+      TEST_DATABASE_URL: postgres://postgres:postgres@localhost:5432/kongrehub_test?sslmode=disable
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.24"
+          cache-dependency-path: backend/go.sum
+      - name: go vet
+        run: go vet ./...
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: v1.64.8
+          working-directory: backend
+      - name: Testler (birim + PostgreSQL entegrasyon + make verify paketi)
+        run: go test ./... -count=1 -race -coverprofile=coverage.out -coverpkg=./internal/domain/...
+      - name: Domain kapsama raporu (≥ %70)
+        run: |
+          go tool cover -func=coverage.out | tee coverage.txt
+          total=$(go tool cover -func=coverage.out | awk '/^total:/ {gsub("%","",$3); print $3}')
+          echo "### Domain paketleri test kapsamı: ${total}%" >> "$GITHUB_STEP_SUMMARY"
+          awk -v t="$total" 'BEGIN { if (t+0 < 70) { print "kapsama %70 altında: " t; exit 1 } }'
+      - name: Determinizm kanıtı (aynı tohum → aynı özet)
+        run: |
+          a=$(go run ./cmd/simulator hash 42); b=$(go run ./cmd/simulator hash 42)
+          echo "seed 42: $a"; test "$a" = "$b"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: backend/coverage.txt
+
+  frontend:
+    name: Frontend (lint + typecheck + test + build)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+
+  images:
+    name: Konteyner imajları
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Backend api
+        uses: docker/build-push-action@v6
+        with: { context: backend, target: api, push: false, tags: kongrehub/api:ci, cache-from: type=gha, cache-to: "type=gha,mode=max" }
+      - name: Backend simulator
+        uses: docker/build-push-action@v6
+        with: { context: backend, target: simulator, push: false, tags: kongrehub/simulator:ci, cache-from: type=gha }
+      - name: Frontend
+        uses: docker/build-push-action@v6
+        with: { context: frontend, push: false, tags: kongrehub/frontend:ci, cache-from: type=gha, cache-to: "type=gha,mode=max" }
+
+  e2e:
+    name: docker compose up + make verify + kaos
+    runs-on: ubuntu-latest
+    needs: [backend, frontend]
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Sistemi başlat (soğuk önbellek süresi ölçülür)
+        run: |
+          cp .env.example .env
+          start=$(date +%s)
+          docker compose up --build -d --wait --wait-timeout 300
+          echo "### Hazır olma süresi: $(( $(date +%s) - start )) sn" >> "$GITHUB_STEP_SUMMARY"
+      - name: make verify
+        run: |
+          make verify | tee verify.txt
+          { echo '```'; cat verify.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+      - name: Kaos senaryosu
+        run: ./scripts/chaos.sh
+      - name: Günlükler (hata durumunda)
+        if: failure()
+        run: docker compose logs --tail=200

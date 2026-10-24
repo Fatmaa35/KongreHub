@@ -1,0 +1,21 @@
+run:
+  timeout: 5m
+linters:
+  enable:
+    - errcheck
+    - govet
+    - staticcheck
+    - unused
+    - ineffassign
+    - gosimple
+    - bodyclose
+linters-settings:
+  errcheck:
+    exclude-functions:
+      - (net/http.ResponseWriter).Write
+      - (*encoding/csv.Writer).Write
+      - (*github.com/jackc/pgx/v5/pgxpool.Pool).Exec
+issues:
+  exclude-rules:
+    - path: _test\.go
+      linters: [errcheck, bodyclose]

@@ -1,0 +1,337 @@
+{
+    "metrics": {
+        "http_req_sending": {
+            "med": 0.0118995,
+            "p(90)": 0.03500380000000005,
+            "p(95)": 0.0580005,
+            "p(99)": 0.28480814000000004,
+            "max": 11.198526,
+            "avg": 0.028120758578311006,
+            "min": 0.002855
+        },
+        "http_req_connecting": {
+            "min": 0,
+            "med": 0,
+            "p(90)": 0,
+            "p(95)": 0,
+            "p(99)": 0,
+            "max": 12.625281,
+            "avg": 0.005434266148854586
+        },
+        "iteration_duration": {
+            "med": 508.135707,
+            "p(90)": 522.4189318,
+            "p(95)": 1007.8390948,
+            "p(99)": 1018.134286,
+            "max": 1475.955208,
+            "avg": 543.2683808362596,
+            "min": 55.417
+        },
+        "http_req_tls_handshaking": {
+            "p(99)": 0,
+            "max": 0,
+            "avg": 0,
+            "min": 0,
+            "med": 0,
+            "p(90)": 0,
+            "p(95)": 0
+        },
+        "http_req_failed": {
+            "fails": 20342,
+            "passes": 0,
+            "thresholds": {
+                "rate<0.01": false
+            },
+            "value": 0
+        },
+        "http_req_waiting": {
+            "p(90)": 5.9139262000000015,
+            "p(95)": 8.876850350000003,
+            "p(99)": 55.93037705000001,
+            "max": 792.040245,
+            "avg": 4.842611337872411,
+            "min": 0.156453,
+            "med": 1.8136315
+        },
+        "http_req_blocked": {
+            "avg": 0.012151710205486072,
+            "min": 0.000837,
+            "med": 0.003604,
+            "p(90)": 0.005976800000000003,
+            "p(95)": 0.007572900000000001,
+            "p(99)": 0.05232666000000004,
+            "max": 12.685067
+        },
+        "http_reqs": {
+            "count": 20342,
+            "rate": 215.1418490874753
+        },
+        "data_sent": {
+            "count": 7577629,
+            "rate": 80142.81362495705
+        },
+        "http_req_duration{scenario:read_mix}": {
+            "min": 0.172434,
+            "med": 2.000268,
+            "p(90)": 5.869456400000003,
+            "p(95)": 7.864928749999996,
+            "p(99)": 12.668499659999998,
+            "max": 64.913912,
+            "avg": 2.720727570306321,
+            "thresholds": {
+                "p(95)<300": false
+            }
+        },
+        "checks": {
+            "passes": 20119,
+            "fails": 0,
+            "value": 1
+        },
+        "vus_max": {
+            "max": 65,
+            "value": 65,
+            "min": 65
+        },
+        "http_req_duration{expected_response:true}": {
+            "p(95)": 9.284911750000001,
+            "p(99)": 56.00514781000001,
+            "max": 792.185431,
+            "avg": 5.007141134794993,
+            "min": 0.172434,
+            "med": 1.943299,
+            "p(90)": 6.255425100000004
+        },
+        "iterations": {
+            "count": 6443,
+            "rate": 68.1427064040214
+        },
+        "data_received": {
+            "count": 171315081,
+            "rate": 1811869.2017948385
+        },
+        "http_req_duration{scenario:editor}": {
+            "max": 288.744634,
+            "avg": 2.940352103370783,
+            "min": 0.544331,
+            "med": 1.343972,
+            "p(90)": 3.7054218,
+            "p(95)": 5.436677199999977,
+            "p(99)": 24.182534239999875,
+            "thresholds": {
+                "p(95)<500": false
+            }
+        },
+        "checkout_duration": {
+            "avg": 297.42,
+            "min": 6,
+            "med": 267,
+            "p(90)": 565.2,
+            "p(95)": 683.1499999999999,
+            "p(99)": 875.0500000000001,
+            "max": 880,
+            "thresholds": {
+                "p(95)<1500": false
+            }
+        },
+        "http_req_receiving": {
+            "p(90)": 0.22867850000000048,
+            "p(95)": 0.4692967000000001,
+            "p(99)": 1.7213573200000016,
+            "max": 7.682609,
+            "avg": 0.13640903834431176,
+            "min": 0.00653,
+            "med": 0.057286000000000004
+        },
+        "http_req_duration": {
+            "p(99)": 56.00514781000001,
+            "max": 792.185431,
+            "avg": 5.007141134794993,
+            "min": 0.172434,
+            "med": 1.943299,
+            "p(90)": 6.255425100000004,
+            "p(95)": 9.284911750000001
+        },
+        "vus": {
+            "value": 7,
+            "min": 0,
+            "max": 45
+        }
+    },
+    "setup_data": {
+        "editor": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiZWRpdG9yIiwibmFtZSI6IlByb2YuIERyLiBMZXlsYSBFZGl0w7ZyIiwiaXNzIjoia29uZ3JlaHViIiwic3ViIjoiMiIsImV4cCI6MTc5Mjg2MDU5NywiaWF0IjoxNzkyODU5Njk3fQ.mxHfMvPdl84PRMZubAbViFqj01FLlIbicbrDUGd8oJM",
+        "readers": [
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXR0ZW5kZWUiLCJuYW1lIjoiS2F0xLFsxLFtY8SxIFNlbGluIiwiaXNzIjoia29uZ3JlaHViIiwic3ViIjoiNiIsImV4cCI6MTc5Mjg2MDU5NywiaWF0IjoxNzkyODU5Njk3fQ.1jU8ZqHZVnjw_o11lYkCmgzGNHLQ-R2P2wBYtoglJFQ",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXR0ZW5kZWUiLCJuYW1lIjoiWmV5bmVwIFNpbmdoIiwiaXNzIjoia29uZ3JlaHViIiwic3ViIjoiODYwIiwiZXhwIjoxNzkyODYwNTk3LCJpYXQiOjE3OTI4NTk2OTd9.pO8DqPN8rMaJ3KvLos4ke5bexsbWLKrjhaFKvYd2Kl4",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXR0ZW5kZWUiLCJuYW1lIjoiSm9uYXMgQmlhbmNoaSIsImlzcyI6ImtvbmdyZWh1YiIsInN1YiI6Ijg2MSIsImV4cCI6MTc5Mjg2MDU5NywiaWF0IjoxNzkyODU5Njk3fQ.hVztAnno8BnRv3GmdPCwCAihv4dpnC51QzBu4Rf4-CA",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXR0ZW5kZWUiLCJuYW1lIjoiTHVjw61hIMOHZWxpayIsImlzcyI6ImtvbmdyZWh1YiIsInN1YiI6Ijg2MiIsImV4cCI6MTc5Mjg2MDU5OCwiaWF0IjoxNzkyODU5Njk4fQ.E8pBmnbA3gjY4c-PXFzv4cD6dFYHDMsLZhJQSXhx3OU",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXR0ZW5kZWUiLCJuYW1lIjoiU2Vya2FuIMOWemthbiIsImlzcyI6ImtvbmdyZWh1YiIsInN1YiI6Ijg2MyIsImV4cCI6MTc5Mjg2MDU5OCwiaWF0IjoxNzkyODU5Njk4fQ.wT9r5pwVGEouFC6pO08rEfhlzJ4KsXy_FDPt3RADECk",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXR0ZW5kZWUiLCJuYW1lIjoiTWVpIFBhcmsiLCJpc3MiOiJrb25ncmVodWIiLCJzdWIiOiI4NjQiLCJleHAiOjE3OTI4NjA1OTgsImlhdCI6MTc5Mjg1OTY5OH0.r9gRqLWmo6Lwf7rXWSg0nqpq0MBWjPqC_tal5h0cInE",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXR0ZW5kZWUiLCJuYW1lIjoiR2l1bGlhIFNpbmdoIiwiaXNzIjoia29uZ3JlaHViIiwic3ViIjoiODY1IiwiZXhwIjoxNzkyODYwNTk4LCJpYXQiOjE3OTI4NTk2OTh9.0KuPBruAcoQYxszvnXVIA30HfzQ8H40awW_zjK2jSlI",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXR0ZW5kZWUiLCJuYW1lIjoiTHVrYXMgxZ5pbcWfZWsiLCJpc3MiOiJrb25ncmVodWIiLCJzdWIiOiI4NjYiLCJleHAiOjE3OTI4NjA1OTgsImlhdCI6MTc5Mjg1OTY5OH0.Uubrfp0T96dEc4MGdM7DLGR5BQk6IZaWUM4aFVsBtaE",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXR0ZW5kZWUiLCJuYW1lIjoiTWVobWV0IMOcbmFsIiwiaXNzIjoia29uZ3JlaHViIiwic3ViIjoiODY3IiwiZXhwIjoxNzkyODYwNTk4LCJpYXQiOjE3OTI4NTk2OTh9.feAyayggvG7CmZ1ZfLKmEnNbMtnWoKD64rW0GHZ4Zh0",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXR0ZW5kZWUiLCJuYW1lIjoiRW1yZSBEZW1pciIsImlzcyI6ImtvbmdyZWh1YiIsInN1YiI6Ijg2OCIsImV4cCI6MTc5Mjg2MDU5OCwiaWF0IjoxNzkyODU5Njk4fQ.RiaQsCXAkw8k8Bx5zFLswRjjJzb3wU4iutfynwBaVFI",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXR0ZW5kZWUiLCJuYW1lIjoiSGlybyBEdWJvaXMiLCJpc3MiOiJrb25ncmVodWIiLCJzdWIiOiI4NjkiLCJleHAiOjE3OTI4NjA1OTgsImlhdCI6MTc5Mjg1OTY5OH0.XsTKAosVLoxxBmRmcrXMGR49XE4Qbwj6Sj3xAuB4NN4",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXR0ZW5kZWUiLCJuYW1lIjoiTHVjw61hIEFsaSIsImlzcyI6ImtvbmdyZWh1YiIsInN1YiI6Ijg3MCIsImV4cCI6MTc5Mjg2MDU5OCwiaWF0IjoxNzkyODU5Njk4fQ.TPThcfdf-C-1gTYCm7Jj-Q04DMq2kSVgTUewkMySk_c",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXR0ZW5kZWUiLCJuYW1lIjoiTWVobWV0IEthcmEiLCJpc3MiOiJrb25ncmVodWIiLCJzdWIiOiI4NzEiLCJleHAiOjE3OTI4NjA1OTgsImlhdCI6MTc5Mjg1OTY5OH0.KOYPfPgYvfLYF__MTL5WzJ1vtjdliRKXnUrejd8DsNM",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXR0ZW5kZWUiLCJuYW1lIjoiTGF5bGEgS2ltIiwiaXNzIjoia29uZ3JlaHViIiwic3ViIjoiODcyIiwiZXhwIjoxNzkyODYwNTk4LCJpYXQiOjE3OTI4NTk2OTh9.E3e0SkHfEIEyOE2dCX8fp1j3nfsJMQAaKUGIGe2NFrw",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXR0ZW5kZWUiLCJuYW1lIjoiTGlhbSBUYW5ha2EiLCJpc3MiOiJrb25ncmVodWIiLCJzdWIiOiI4NzMiLCJleHAiOjE3OTI4NjA1OTgsImlhdCI6MTc5Mjg1OTY5OH0.JiDvOznllMs5HKTj3sP9_W3IhkQfw6YxS1A1A-y07N0",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXR0ZW5kZWUiLCJuYW1lIjoiS2VyZW0gS2F5YSIsImlzcyI6ImtvbmdyZWh1YiIsInN1YiI6Ijg3NCIsImV4cCI6MTc5Mjg2MDU5OCwiaWF0IjoxNzkyODU5Njk4fQ.HC6xTolqnP8vVcjlZNAHAV294Yjf1cXIlK9oQFS916I",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXR0ZW5kZWUiLCJuYW1lIjoiV2VpIEFyc2xhbiIsImlzcyI6ImtvbmdyZWh1YiIsInN1YiI6Ijg3NSIsImV4cCI6MTc5Mjg2MDU5OCwiaWF0IjoxNzkyODU5Njk4fQ.lwunnGdmqT9x62i-lN_HlREsqXUt-dNPDRa2RcCbFUI",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXR0ZW5kZWUiLCJuYW1lIjoiTWFyY28gWcSxbGTEsXoiLCJpc3MiOiJrb25ncmVodWIiLCJzdWIiOiI4NzYiLCJleHAiOjE3OTI4NjA1OTgsImlhdCI6MTc5Mjg1OTY5OH0.auOGT1fMQT6XKVMqEqCsFEctoLl1Vm16fb5Zay5u6qc",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXR0ZW5kZWUiLCJuYW1lIjoiTXVzdGFmYSDDlnpkZW1pciIsImlzcyI6ImtvbmdyZWh1YiIsInN1YiI6Ijg3NyIsImV4cCI6MTc5Mjg2MDU5OCwiaWF0IjoxNzkyODU5Njk4fQ.7VlkUYME6gN3zqKPOP8oPaEjhv7dAc3rdA56L9QqwU4",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXR0ZW5kZWUiLCJuYW1lIjoiQ2xhcmEgTm92YWsiLCJpc3MiOiJrb25ncmVodWIiLCJzdWIiOiI4NzgiLCJleHAiOjE3OTI4NjA1OTgsImlhdCI6MTc5Mjg1OTY5OH0.xTLZS1gAJcwrbvRwRdPx1YMucY-QfFBwoXO2kT2OmeE"
+        ],
+        "buyers": [
+            "k6.1792859698543.0@load.example",
+            "k6.1792859698543.1@load.example",
+            "k6.1792859698543.2@load.example",
+            "k6.1792859698543.3@load.example",
+            "k6.1792859698543.4@load.example",
+            "k6.1792859698543.5@load.example",
+            "k6.1792859698543.6@load.example",
+            "k6.1792859698543.7@load.example",
+            "k6.1792859698543.8@load.example",
+            "k6.1792859698543.9@load.example",
+            "k6.1792859698543.10@load.example",
+            "k6.1792859698543.11@load.example",
+            "k6.1792859698543.12@load.example",
+            "k6.1792859698543.13@load.example",
+            "k6.1792859698543.14@load.example",
+            "k6.1792859698543.15@load.example",
+            "k6.1792859698543.16@load.example",
+            "k6.1792859698543.17@load.example",
+            "k6.1792859698543.18@load.example",
+            "k6.1792859698543.19@load.example",
+            "k6.1792859698543.20@load.example",
+            "k6.1792859698543.21@load.example",
+            "k6.1792859698543.22@load.example",
+            "k6.1792859698543.23@load.example",
+            "k6.1792859698543.24@load.example",
+            "k6.1792859698543.25@load.example",
+            "k6.1792859698543.26@load.example",
+            "k6.1792859698543.27@load.example",
+            "k6.1792859698543.28@load.example",
+            "k6.1792859698543.29@load.example",
+            "k6.1792859698543.30@load.example",
+            "k6.1792859698543.31@load.example",
+            "k6.1792859698543.32@load.example",
+            "k6.1792859698543.33@load.example",
+            "k6.1792859698543.34@load.example",
+            "k6.1792859698543.35@load.example",
+            "k6.1792859698543.36@load.example",
+            "k6.1792859698543.37@load.example",
+            "k6.1792859698543.38@load.example",
+            "k6.1792859698543.39@load.example",
+            "k6.1792859698543.40@load.example",
+            "k6.1792859698543.41@load.example",
+            "k6.1792859698543.42@load.example",
+            "k6.1792859698543.43@load.example",
+            "k6.1792859698543.44@load.example",
+            "k6.1792859698543.45@load.example",
+            "k6.1792859698543.46@load.example",
+            "k6.1792859698543.47@load.example",
+            "k6.1792859698543.48@load.example",
+            "k6.1792859698543.49@load.example",
+            "k6.1792859698543.50@load.example",
+            "k6.1792859698543.51@load.example",
+            "k6.1792859698543.52@load.example",
+            "k6.1792859698543.53@load.example",
+            "k6.1792859698543.54@load.example",
+            "k6.1792859698543.55@load.example",
+            "k6.1792859698543.56@load.example",
+            "k6.1792859698543.57@load.example",
+            "k6.1792859698543.58@load.example",
+            "k6.1792859698543.59@load.example",
+            "k6.1792859698543.60@load.example",
+            "k6.1792859698543.61@load.example",
+            "k6.1792859698543.62@load.example",
+            "k6.1792859698543.63@load.example",
+            "k6.1792859698543.64@load.example",
+            "k6.1792859698543.65@load.example",
+            "k6.1792859698543.66@load.example",
+            "k6.1792859698543.67@load.example",
+            "k6.1792859698543.68@load.example",
+            "k6.1792859698543.69@load.example",
+            "k6.1792859698543.70@load.example",
+            "k6.1792859698543.71@load.example",
+            "k6.1792859698543.72@load.example",
+            "k6.1792859698543.73@load.example",
+            "k6.1792859698543.74@load.example",
+            "k6.1792859698543.75@load.example",
+            "k6.1792859698543.76@load.example",
+            "k6.1792859698543.77@load.example",
+            "k6.1792859698543.78@load.example",
+            "k6.1792859698543.79@load.example",
+            "k6.1792859698543.80@load.example",
+            "k6.1792859698543.81@load.example",
+            "k6.1792859698543.82@load.example",
+            "k6.1792859698543.83@load.example",
+            "k6.1792859698543.84@load.example",
+            "k6.1792859698543.85@load.example",
+            "k6.1792859698543.86@load.example",
+            "k6.1792859698543.87@load.example",
+            "k6.1792859698543.88@load.example",
+            "k6.1792859698543.89@load.example",
+            "k6.1792859698543.90@load.example",
+            "k6.1792859698543.91@load.example",
+            "k6.1792859698543.92@load.example",
+            "k6.1792859698543.93@load.example",
+            "k6.1792859698543.94@load.example",
+            "k6.1792859698543.95@load.example",
+            "k6.1792859698543.96@load.example",
+            "k6.1792859698543.97@load.example",
+            "k6.1792859698543.98@load.example",
+            "k6.1792859698543.99@load.example"
+        ]
+    },
+    "root_group": {
+        "name": "",
+        "path": "",
+        "id": "d41d8cd98f00b204e9800998ecf8427e",
+        "groups": {},
+        "checks": {
+                "submissions 200": {
+                    "passes": 2225,
+                    "fails": 0,
+                    "name": "submissions 200",
+                    "path": "::submissions 200",
+                    "id": "214c4d06af0f968fd70e07dfb277a9b2"
+                },
+                "registration 201": {
+                    "name": "registration 201",
+                    "path": "::registration 201",
+                    "id": "2649fe104fd6c2b722ae45ee6dcde515",
+                    "passes": 100,
+                    "fails": 0
+                },
+                "payment 201 paid": {
+                    "name": "payment 201 paid",
+                    "path": "::payment 201 paid",
+                    "id": "b5dee4a62e56d74093d28a208d11eab0",
+                    "passes": 100,
+                    "fails": 0
+                },
+                "program 200": {
+                    "path": "::program 200",
+                    "id": "1f40016d030fbf18c796e6e493f17555",
+                    "passes": 5898,
+                    "fails": 0,
+                    "name": "program 200"
+                },
+                "live 200": {
+                    "name": "live 200",
+                    "path": "::live 200",
+                    "id": "828b1c4fdf21bbf618219b74198c1776",
+                    "passes": 5898,
+                    "fails": 0
+                },
+                "fx 200": {
+                    "id": "fd997f58e557c1f61211076875b93b87",
+                    "passes": 5898,
+                    "fails": 0,
+                    "name": "fx 200",
+                    "path": "::fx 200"
+                }
+            }
+    }
+}

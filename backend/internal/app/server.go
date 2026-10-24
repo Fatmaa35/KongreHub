@@ -3,8 +3,13 @@ package app
 
 import (
 	"context"
+	"errors"
+	"net"
+	"syscall"
+
 	"crypto/rand"
 	"encoding/hex"
+	"github.com/jackc/pgx/v5/pgconn"
 	"log/slog"
 	"net/http"
 	"runtime/debug"
@@ -116,6 +121,14 @@ func New(cfg config.Config, pool *pgxpool.Pool, log *slog.Logger) (*App, error) 
 	a := &App{
 		Cfg: cfg, Pool: pool, Log: log, Tokens: auth.NewTokens(cfg.JWTSecret, cfg.AccessTTL),
 		Clock: clock.New(), Signer: signer, Store: st, Calendar: pricing.DefaultCalendar(), Metrics: newMetrics(pool),
+	}
+	httpx.Classify = func(err error) *httpx.Error {
+		var ce *pgconn.ConnectError
+		var ne net.Error
+		if errors.As(err, &ce) || errors.As(err, &ne) || errors.Is(err, syscall.ECONNREFUSED) {
+			return httpx.ErrUnavailable
+		}
+		return nil
 	}
 	httpx.ErrorReporter = func(r *http.Request, err error) {
 		log.Error("istek hatası", "route", routePattern(r), "request_id", r.Header.Get("X-Request-ID"), "err", err.Error())

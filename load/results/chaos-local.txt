@@ -1,0 +1,6 @@
+[19:37:29] Başlangıç: /health=200, login=200
+[19:37:29] Hata enjeksiyonu: veritabanı durduruluyor (su postgres -c '/usr/lib/postgresql/16/bin/pg_ctl -D /var/lib/postgresql/data stop -m fast')
+[19:37:31] Kesinti sırasında: /health=503 (503 beklenir), login=503 (503 beklenir), istek 10 ms içinde yanıtlandı (askıda kalmadı)
+[19:37:36] Veritabanı yeniden başlatılıyor (su postgres -c '/usr/lib/postgresql/16/bin/pg_ctl -D /var/lib/postgresql/data -l /var/lib/postgresql/data/log.txt -o "-p 5432 -k /tmp" start')
+[19:37:36] TOPARLANDI: veritabanı başlatıldıktan 191 ms sonra /health=200 ve login=200 (API yeniden başlatılmadı; pgx havuzu bağlantıları yeniledi)
+[19:37:36] Doğrulama: {"checks":{"database":"up","storage":"up"},"status":"ok","time":"2026-10-24T16:37:36.898959847Z"}
