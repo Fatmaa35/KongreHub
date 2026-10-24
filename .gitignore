@@ -1,0 +1,9 @@
+.env
+node_modules/
+frontend/dist/
+backend/bin/
+coverage*.out
+coverage.html
+*.log
+.DS_Store
+/data/
