@@ -3,9 +3,10 @@ COMPOSE := docker compose
 
 .PHONY: up down logs verify reset-demo load chaos test test-integration lint seed-hash fmt
 
-up:            ## Sistemi ayağa kaldır
+up:            ## Sistemi arka planda ayağa kaldır ve sağlıklı olmasını bekle
 	@test -f .env || cp .env.example .env
-	$(COMPOSE) up --build -d --wait
+	$(COMPOSE) up --build -d
+	@./scripts/wait-healthy.sh
 	@echo "Arayüz: http://localhost:3000  API: http://localhost:8080  Doküman: http://localhost:8080/docs"
 
 down:          ## Sistemi durdur (veriler korunur)
@@ -16,7 +17,7 @@ logs:
 
 verify:        ## Tüm özellik ve zorlu görevleri uçtan uca dener, PASS/FAIL tablosu basar
 	@test -f .env || cp .env.example .env
-	$(COMPOSE) up --build -d --wait
+	$(COMPOSE) up --build -d
 	$(COMPOSE) --profile verify run --rm --build verify
 
 reset-demo:    ## Verileri ilk seed haline döndürür (aynı tohum)

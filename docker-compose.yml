@@ -111,9 +111,10 @@ services:
     image: grafana/k6:0.54.0
     volumes:
       - ./load:/scripts:ro
+      - ./load/results:/results
     environment:
       BASE_URL: http://api:8080
-    command: ["run", "--summary-export=/scripts/results/summary.json", "/scripts/load.js"]
+    command: ["run", "--summary-export=/results/summary.json", "/scripts/load.js"]
     depends_on:
       api: { condition: service_healthy }
       simulator: { condition: service_healthy }

@@ -104,7 +104,8 @@ jobs:
         run: |
           cp .env.example .env
           start=$(date +%s)
-          docker compose up --build -d --wait --wait-timeout 300
+          docker compose up --build -d
+          ./scripts/wait-healthy.sh 300
           echo "### Hazır olma süresi: $(( $(date +%s) - start )) sn" >> "$GITHUB_STEP_SUMMARY"
       - name: make verify
         run: |

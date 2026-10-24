@@ -18,6 +18,10 @@ import (
 
 var ErrNotPDF = errors.New("dosya geçerli bir PDF değil")
 
+// pdfcpu varsayılan olarak ev dizinine yapılandırma/font yazar; root olmayan,
+// salt-okunur kökü olan konteynerde buna gerek yok.
+func init() { api.DisableConfigDir() }
+
 // Sanitize returns a metadata-free copy of the PDF.
 func Sanitize(in []byte) ([]byte, error) {
 	if !bytes.HasPrefix(bytes.TrimLeft(in, "\x00\t\r\n "), []byte("%PDF-")) {
