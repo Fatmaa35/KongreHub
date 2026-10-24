@@ -24,6 +24,7 @@ func (a *App) registerAdmin(r chi.Router) {
 	a.handle(r, "GET", "/api/admin/routes", a.listRoutes, roles(RAdmin))
 	a.handle(r, "GET", "/api/admin/clock", a.getClock, roles(RAdmin, REditor))
 	a.handle(r, "POST", "/api/admin/clock", a.setClock, roles(RAdmin))
+	a.handle(r, "POST", "/api/admin/demo/backdate-assignment", a.backdateAssignment, roles(RAdmin))
 }
 
 func (a *App) listUsers(w http.ResponseWriter, r *http.Request) error {
@@ -211,4 +212,36 @@ func (a *App) LoadClock(ctx context.Context) {
 			a.Clock.SetOffset(time.Duration(f * float64(time.Hour)))
 		}
 	}
+}
+
+// backdateAssignment (yalnızca DEMO_MODE): tek bir atamanın atanma tarihini
+// geriye alır; 14 günlük süre aşımı ve hatırlatmalar saati global olarak
+// kaydırmadan, tek bir kayıt üzerinde gösterilebilir.
+func (a *App) backdateAssignment(w http.ResponseWriter, r *http.Request) error {
+	var in struct {
+		AssignmentID int64 `json:"assignment_id"`
+		Days         int   `json:"days"`
+	}
+	if err := httpx.DecodeJSON(r, &in); err != nil {
+		return err
+	}
+	if !a.Cfg.DemoMode {
+		return httpx.E(http.StatusForbidden, "demo_mode_disabled", "yalnızca DEMO_MODE=true iken kullanılabilir")
+	}
+	if in.Days < 1 || in.Days > 60 {
+		return httpx.Validation("days 1-60 arasında olmalı")
+	}
+	tag, err := a.Pool.Exec(r.Context(), `UPDATE review_assignments SET assigned_at = assigned_at - make_interval(days => $2),
+		due_at = due_at - make_interval(days => $2) WHERE id=$1 AND status='assigned'`, in.AssignmentID, in.Days)
+	if err != nil {
+		return err
+	}
+	if tag.RowsAffected() == 0 {
+		return httpx.ErrNotFound
+	}
+	p := principal(r)
+	aid, role := actor(p)
+	_ = audit.Log(r.Context(), a.Pool, audit.Entry{ActorID: aid, ActorRole: role, Action: "demo.assignment_backdated", Entity: "assignment", EntityID: itoa(in.AssignmentID), New: map[string]any{"days": in.Days}})
+	httpx.WriteJSON(w, 200, map[string]any{"assignment_id": in.AssignmentID, "backdated_days": in.Days})
+	return nil
 }

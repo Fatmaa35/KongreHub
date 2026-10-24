@@ -95,8 +95,13 @@ func (a *App) listSlots(w http.ResponseWriter, r *http.Request) error {
 	return nil
 }
 
-// scheduleInput loads everything the scheduler needs from the database.
 func (a *App) scheduleInput(ctx context.Context, q db.Querier) (schedule.Input, map[int64]string, error) {
+	return LoadScheduleInput(ctx, q)
+}
+
+// LoadScheduleInput loads everything the scheduler needs from the database
+// (seed de programı aynı yoldan üretir).
+func LoadScheduleInput(ctx context.Context, q db.Querier) (schedule.Input, map[int64]string, error) {
 	in := schedule.Input{People: map[int64]schedule.Person{}}
 	titles := map[int64]string{}
 	rows, err := q.Query(ctx, `SELECT id, name, capacity FROM rooms`)
@@ -270,26 +275,8 @@ func (a *App) generateProgram(w http.ResponseWriter, r *http.Request) error {
 		if in.DryRun {
 			return nil
 		}
-		if _, err := tx.Exec(ctx, `DELETE FROM program_sessions`); err != nil {
+		if err := PersistProgram(ctx, tx, prog); err != nil {
 			return err
-		}
-		for _, s := range prog.Sessions {
-			var sid int64
-			var chair any
-			if s.ChairID != 0 {
-				chair = s.ChairID
-			}
-			title := strings.ToUpper(s.Topic[:1]) + s.Topic[1:]
-			if err := tx.QueryRow(ctx, `INSERT INTO program_sessions (title, topic, room_id, slot_id, chair_id) VALUES ($1,$2,$3,$4,$5) RETURNING id`,
-				title, s.Topic, s.RoomID, s.SlotID, chair).Scan(&sid); err != nil {
-				return err
-			}
-			for i, t := range s.Talks {
-				if _, err := tx.Exec(ctx, `INSERT INTO session_papers (session_id, submission_id, position, starts_at, ends_at) VALUES ($1,$2,$3,$4,$5)`,
-					sid, t.PaperID, i+1, t.Start, t.End); err != nil {
-					return err
-				}
-			}
 		}
 		aid, role := actor(p)
 		return audit.Log(ctx, tx, audit.Entry{ActorID: aid, ActorRole: role, Action: "program.generated", Entity: "program", EntityID: "current",
@@ -299,6 +286,36 @@ func (a *App) generateProgram(w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 	httpx.WriteJSON(w, 200, resp)
+	return nil
+}
+
+// PersistProgram replaces the stored program (session_papers tetikleyicisi
+// kabul + ödeme kuralını ayrıca uygular).
+func PersistProgram(ctx context.Context, tx pgx.Tx, prog schedule.Program) error {
+	if _, err := tx.Exec(ctx, `DELETE FROM program_sessions`); err != nil {
+		return err
+	}
+	for _, s := range prog.Sessions {
+		var sid int64
+		var chair any
+		if s.ChairID != 0 {
+			chair = s.ChairID
+		}
+		title := s.Topic
+		if title != "" {
+			title = strings.ToUpper(title[:1]) + title[1:]
+		}
+		if err := tx.QueryRow(ctx, `INSERT INTO program_sessions (title, topic, room_id, slot_id, chair_id) VALUES ($1,$2,$3,$4,$5) RETURNING id`,
+			title, s.Topic, s.RoomID, s.SlotID, chair).Scan(&sid); err != nil {
+			return err
+		}
+		for i, t := range s.Talks {
+			if _, err := tx.Exec(ctx, `INSERT INTO session_papers (session_id, submission_id, position, starts_at, ends_at) VALUES ($1,$2,$3,$4,$5)`,
+				sid, t.PaperID, i+1, t.Start, t.End); err != nil {
+				return err
+			}
+		}
+	}
 	return nil
 }
 

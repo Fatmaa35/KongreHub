@@ -38,6 +38,8 @@ func (a *App) registerRegistrations(r chi.Router) {
 	a.handle(r, "POST", "/api/registrations/{id}/payments", a.pay, roles(append(selfRegisterRoles, RRegistrar)...), idempotent())
 	a.handle(r, "POST", "/api/registrations/{id}/requote", a.requote, roles(append(selfRegisterRoles, RRegistrar)...))
 	a.handle(r, "POST", "/api/registrations/{id}/cancel", a.cancelRegistration, roles(append(selfRegisterRoles, RRegistrar)...), idempotent())
+	a.handle(r, "GET", "/api/registrations/{id}/refund-quote", a.refundQuote, roles(append(selfRegisterRoles, RRegistrar)...))
+	a.handle(r, "POST", "/api/fx", a.recordFX, roles(RRegistrar, RAdmin))
 	a.handle(r, "GET", "/api/invoices", a.listInvoices, roles(RRegistrar, RAdmin))
 	a.handle(r, "POST", "/api/payments/webhook", a.paymentWebhook, public())
 }
@@ -434,7 +436,7 @@ func (a *App) pay(w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 	var in struct {
-		Outcome string `json:"outcome"` // simülatör: success | fail
+		Outcome string `json:"outcome"` // simülatör: success | fail | async (sonuç webhook ile gelir)
 	}
 	if err := httpx.DecodeJSON(r, &in); err != nil {
 		return err
@@ -442,8 +444,8 @@ func (a *App) pay(w http.ResponseWriter, r *http.Request) error {
 	if in.Outcome == "" {
 		in.Outcome = "success"
 	}
-	if in.Outcome != "success" && in.Outcome != "fail" {
-		return httpx.Validation("outcome success veya fail olmalı")
+	if in.Outcome != "success" && in.Outcome != "fail" && in.Outcome != "async" {
+		return httpx.Validation("outcome success, fail veya async olmalı")
 	}
 	p := principal(r)
 	if err := a.ownRegistration(r.Context(), p, id); err != nil {
@@ -484,15 +486,20 @@ func (a *App) pay(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		return err
 	}
-	outcome, err := a.ProcessPaymentEvent(r.Context(), ev)
-	if err != nil {
-		return err
+	outcome, status := "awaiting_webhook", "pending"
+	if in.Outcome != "async" {
+		// sağlayıcı simülatörü anında yanıt verir; olay webhook ile aynı idempotent yoldan işlenir
+		if outcome, err = a.ProcessPaymentEvent(r.Context(), ev); err != nil {
+			return err
+		}
+		status = strings.TrimPrefix(ev.Type, "payment.")
 	}
 	d, err := a.getRegistration(r.Context(), a.Pool, id)
 	if err != nil {
 		return err
 	}
-	httpx.WriteJSON(w, http.StatusCreated, map[string]any{"provider_ref": ev.ProviderRef, "payment_status": strings.TrimPrefix(ev.Type, "payment."), "outcome": outcome, "registration": d})
+	httpx.WriteJSON(w, http.StatusCreated, map[string]any{"provider_ref": ev.ProviderRef, "amount_cents": ev.AmountCents, "currency": ev.Currency,
+		"payment_status": status, "outcome": outcome, "registration": d})
 	return nil
 }
 
@@ -696,6 +703,59 @@ func (a *App) cancelRegistration(w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 	httpx.WriteJSON(w, 200, map[string]any{"registration_id": id, "refund_cents": refund, "rule": rule})
+	return nil
+}
+
+// refundQuote previews the refund rule for a date without changing anything.
+func (a *App) refundQuote(w http.ResponseWriter, r *http.Request) error {
+	id, err := httpx.IDParam(chi.URLParam(r, "id"))
+	if err != nil {
+		return err
+	}
+	p := principal(r)
+	if err := a.ownRegistration(r.Context(), p, id); err != nil {
+		return err
+	}
+	at := a.Clock.Now()
+	if s := r.URL.Query().Get("at"); s != "" {
+		if at, err = time.Parse(time.RFC3339, s); err != nil {
+			return httpx.Validation("at RFC3339 biçiminde olmalı")
+		}
+	}
+	d, err := a.getRegistration(r.Context(), a.Pool, id)
+	if err != nil {
+		return err
+	}
+	rule := a.Calendar.RefundFor(at)
+	amount := int64(0)
+	if d.Status == "paid" {
+		amount = pricing.RefundAmount(d.TotalCents, rule)
+	}
+	httpx.WriteJSON(w, 200, map[string]any{"registration_id": id, "at": at, "rule": rule, "refund_cents": amount, "currency": d.Currency,
+		"paid_cents": d.TotalCents, "conference_start": a.Calendar.ConferenceStart})
+	return nil
+}
+
+// recordFX stores a new EUR→TRY observation (kur sağlayıcı / kayıt görevlisi).
+// Mevcut kayıtların dondurulmuş kuru değişmez.
+func (a *App) recordFX(w http.ResponseWriter, r *http.Request) error {
+	var in struct {
+		Rate string `json:"rate"`
+	}
+	if err := httpx.DecodeJSON(r, &in); err != nil {
+		return err
+	}
+	rate, err := pricing.ParseRate(in.Rate)
+	if err != nil {
+		return httpx.Validation(err.Error())
+	}
+	if _, err := a.Pool.Exec(r.Context(), `INSERT INTO fx_rates (rate, observed_at) VALUES ($1::numeric, $2)`, rate.String(), a.Clock.Now()); err != nil {
+		return err
+	}
+	p := principal(r)
+	aid, role := actor(p)
+	_ = audit.Log(r.Context(), a.Pool, audit.Entry{ActorID: aid, ActorRole: role, Action: "fx.recorded", Entity: "fx_rate", EntityID: "EURTRY", New: map[string]any{"rate": rate.String()}})
+	httpx.WriteJSON(w, 201, map[string]any{"rate": rate.String()})
 	return nil
 }
 
