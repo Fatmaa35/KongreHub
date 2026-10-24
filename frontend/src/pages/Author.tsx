@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link, useNavigate } from 'react-router-dom'
+import { useFeedback } from '../components/feedback'
 import { api, type Page } from '../api'
 import { useAuth } from '../auth'
 import { Badge, Card, ErrorBox, PageTitle, QueryState } from '../components/ui'
@@ -25,7 +26,7 @@ export function MySubmissions() {
     <>
       <PageTitle sub="Gönderdiğiniz ya da yazarı olduğunuz bildiriler">Bildirilerim</PageTitle>
       <Card actions={<Link className="btn" to="/author/new">Yeni bildiri</Link>}>
-        <QueryState q={q} isEmpty={(d) => d.items.length === 0} empty="Henüz bildiriniz yok.">
+        <QueryState q={q} isEmpty={(d) => d.items.length === 0} empty="Henüz bildiriniz yok. İlk bildirinizi gönderdiğinizde durumu burada izleyebilirsiniz." emptyAction={<Link className="btn" to="/author/new">Bildiri gönder</Link>}>
           {(d) => (
             <div className="table-wrap">
               <table>
@@ -63,6 +64,7 @@ export function NewSubmission() {
   const { user } = useAuth()
   const nav = useNavigate()
   const qc = useQueryClient()
+  const { toast } = useFeedback()
   const inst = useQuery({ queryKey: ['institutions'], queryFn: () => api<{ items: { id: number; name: string }[] }>('/api/institutions') })
   const [title, setTitle] = useState('')
   const [abstract, setAbstract] = useState('')
@@ -83,6 +85,7 @@ export function NewSubmission() {
     },
     onSuccess: (s) => {
       void qc.invalidateQueries({ queryKey: ['mine'] })
+      toast('Bildiriniz alındı. PDF\'teki yazar bilgisi temizlendi.')
       nav(`/submissions/${s.id}`)
     },
   })

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useFeedback } from '../components/feedback'
 import { api, ApiError } from '../api'
 import { Card, ErrorBox, Notice, PageTitle, QueryState, Spinner, Stat } from '../components/ui'
 import { time } from '../format'
@@ -17,6 +18,7 @@ const reasonText: Record<string, string> = { no_paid_author: 'Ödeme yapan yazar
 /** Program oluşturma + sürükle-bırak düzenleme (bonus). Her taşıma sunucuda bağımsız doğrulayıcıdan geçer. */
 export default function ProgramEditor() {
   const qc = useQueryClient()
+  const { toast, confirm } = useFeedback()
   const rooms = useQuery({ queryKey: ['rooms'], queryFn: () => api<{ items: { id: number; name: string; capacity: number }[] }>('/api/rooms') })
   const slots = useQuery({ queryKey: ['slots'], queryFn: () => api<{ items: { id: number; starts_at: string }[] }>('/api/slots') })
   const prog = useQuery({ queryKey: ['program'], queryFn: () => api<{ sessions: SessionView[] }>('/api/program') })
@@ -33,11 +35,16 @@ export default function ProgramEditor() {
     onSuccess: (r) => {
       setGen(r)
       if (!r.dry_run) refresh()
+      toast(r.dry_run ? `Deneme: ${r.stats.scheduled} bildiri ${r.stats.sessions} oturuma yerleşti` : `Program oluşturuldu: ${r.stats.sessions} oturum`)
     },
   })
   const move = useMutation({
     mutationFn: (v: { id: number; room_id: number; slot_id: number }) => api(`/api/program/sessions/${v.id}`, { method: 'PUT', body: { room_id: v.room_id, slot_id: v.slot_id } }),
-    onSuccess: refresh,
+    onSuccess: () => {
+      refresh()
+      toast('Oturum taşındı; program hâlâ çakışmasız')
+    },
+    onError: () => toast('Taşıma reddedildi: programda çakışma yaratıyor', 'err'),
   })
   const moveErr = move.error instanceof ApiError ? (move.error.details?.violations as { message: string }[] | undefined) : undefined
   return (
@@ -46,7 +53,7 @@ export default function ProgramEditor() {
       <Card title="Oluştur ve doğrula" actions={
         <>
           <button className="btn secondary" disabled={generate.isPending} onClick={() => generate.mutate(true)}>Deneme (kaydetme)</button>
-          <button className="btn" disabled={generate.isPending} onClick={() => confirm('Mevcut program yeniden oluşturulacak. Devam?') && generate.mutate(false)}>Programı yeniden oluştur</button>
+          <button className="btn" disabled={generate.isPending} onClick={async () => (await confirm({ title: 'Program yeniden oluşturulsun mu?', body: 'Mevcut oturum yerleşimi ve elle yaptığınız taşımalar silinir.', action: 'Yeniden oluştur' })) && generate.mutate(false)}>Programı yeniden oluştur</button>
         </>
       }>
         {generate.isPending && <Spinner label="Çizelgeleniyor…" />}

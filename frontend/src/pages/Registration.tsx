@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useFeedback } from '../components/feedback'
 import { api, newIdempotencyKey, type Page } from '../api'
 import { Badge, Card, ErrorBox, Notice, PageTitle, QueryState } from '../components/ui'
 import { dt, money } from '../format'
@@ -45,12 +46,13 @@ function Breakdown({ lines, currency }: { lines: { label: string; amount_cents: 
 
 export default function RegistrationPage() {
   const qc = useQueryClient()
+  const { toast } = useFeedback()
   const [currency, setCurrency] = useState('EUR')
   const mine = useQuery({ queryKey: ['my-registrations'], queryFn: () => api<Page<Registration>>('/api/registrations/mine') })
   const quote = useQuery({ queryKey: ['quote', currency], queryFn: () => api<Quote>('/api/registrations/quote', { body: { currency } }) })
   const fx = useQuery({ queryKey: ['fx'], queryFn: () => api<{ rate: string; observed_at: string }>('/api/fx/current'), refetchInterval: 10000 })
   const refresh = () => void qc.invalidateQueries({ queryKey: ['my-registrations'] })
-  const register = useMutation({ mutationFn: () => api('/api/registrations', { body: { currency }, idempotent: true }), onSuccess: refresh })
+  const register = useMutation({ mutationFn: () => api('/api/registrations', { body: { currency }, idempotent: true }), onSuccess: () => { refresh(); toast(currency === 'TRY' ? 'Kaydınız oluşturuldu, kur 24 saatliğine sabitlendi' : 'Kaydınız oluşturuldu') } })
   const active = mine.data?.items.find((r) => r.status === 'pending' || r.status === 'paid')
   return (
     <>
@@ -95,15 +97,21 @@ export default function RegistrationPage() {
 }
 
 function ActiveRegistration({ r, onChange, liveRate }: { r: Registration; onChange: () => void; liveRate?: string }) {
+  const { toast, confirm } = useFeedback()
   // aynı ödeme denemesi için sabit Idempotency-Key: çift tıklama çift ödeme yaratmaz
   const [payKey, setPayKey] = useState(newIdempotencyKey)
   const pay = useMutation({
     mutationFn: (outcome: string) => api<{ outcome: string }>(`/api/registrations/${r.id}/payments`, { body: { outcome }, idempotent: payKey }),
-    onSuccess: () => { setPayKey(newIdempotencyKey()); onChange() },
+    onSuccess: (d) => {
+      setPayKey(newIdempotencyKey())
+      onChange()
+      if (d.outcome === 'paid') toast('Ödeme alındı, faturanız kesildi')
+      else toast('Ödeme reddedildi, tekrar deneyebilirsiniz', 'err')
+    },
   })
   const requote = useMutation({ mutationFn: () => api(`/api/registrations/${r.id}/requote`, { body: {} }), onSuccess: onChange })
   const refundQ = useQuery({ queryKey: ['refund-quote', r.id], queryFn: () => api<{ rule: { label: string; percent: number }; refund_cents: number }>(`/api/registrations/${r.id}/refund-quote`), enabled: r.status === 'paid' })
-  const cancel = useMutation({ mutationFn: () => api(`/api/registrations/${r.id}/cancel`, { body: { reason: 'katılımcı iptali' }, idempotent: true }), onSuccess: onChange })
+  const cancel = useMutation({ mutationFn: () => api<{ refund_cents: number }>(`/api/registrations/${r.id}/cancel`, { body: { reason: 'katılımcı iptali' }, idempotent: true }), onSuccess: (d) => { onChange(); toast(`Kayıt iptal edildi, iade: ${money(d.refund_cents, r.currency)}`) } })
   const expired = r.currency === 'TRY' && new Date(r.quote_valid_until) < new Date()
   return (
     <Card title={<>Kaydınız #{r.id} <Badge status={r.status} /></>}>
@@ -139,7 +147,7 @@ function ActiveRegistration({ r, onChange, liveRate }: { r: Registration; onChan
             <>
               <Notice>Ödendi · fatura <strong>{r.invoice_number}</strong> · {dt(r.paid_at)}</Notice>
               {refundQ.data && <p className="hint">Şimdi iptal ederseniz: {refundQ.data.rule.label} → {money(refundQ.data.refund_cents, r.currency)}</p>}
-              <button className="btn danger small" disabled={cancel.isPending} onClick={() => confirm('Kaydı iptal etmek istiyor musunuz?') && cancel.mutate()}>Kaydı iptal et</button>
+              <button className="btn danger small" disabled={cancel.isPending} onClick={async () => (await confirm({ title: 'Kayıt iptal edilsin mi?', body: refundQ.data ? `${refundQ.data.rule.label}: ${money(refundQ.data.refund_cents, r.currency)} iade edilir. Bu işlem geri alınamaz.` : 'Bu işlem geri alınamaz.', action: 'Kaydı iptal et', danger: true })) && cancel.mutate()}>Kaydı iptal et</button>
             </>
           )}
           {(pay.isError || requote.isError || cancel.isError) && <ErrorBox error={pay.error ?? requote.error ?? cancel.error} />}

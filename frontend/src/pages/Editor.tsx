@@ -100,7 +100,7 @@ export function Assignments() {
             <Notice kind={shown.violations.length ? 'err' : 'ok'}>
               {shown.dry_run ? 'Deneme (kaydedilmedi)' : `${shown.created} atama kaydedildi`} · bağımsız doğrulayıcı: {shown.violations.length === 0 ? 'ihlal yok ✓' : `${shown.violations.length} ihlal`} · {dt(shown.ran_at)}
             </Notice>
-            <div className="stats">
+            <div className="stats wide">
               <Stat label="Bildiri / hakem" value={`${shown.stats.papers} / ${shown.stats.reviewers}`} />
               <Stat label="Atanan / istenen" value={`${shown.stats.assigned} / ${shown.stats.requested}`} />
               <Stat label="Süre" value={`${shown.stats.duration_ms} ms`} hint="sınır: 20 sn" />

@@ -1,9 +1,10 @@
 import { useState, type FormEvent } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link, useParams } from 'react-router-dom'
+import { useFeedback } from '../components/feedback'
 import { api, download, type Page } from '../api'
 import { useAuth } from '../auth'
-import { Badge, Card, ErrorBox, Notice, PageTitle, QueryState } from '../components/ui'
+import { Badge, Card, ErrorBox, Notice, PageTitle, QueryState, Steps } from '../components/ui'
 import { dt, recLabel } from '../format'
 
 interface Review {
@@ -42,6 +43,18 @@ interface Submission {
   my_assignment_id?: number
 }
 
+/** Bildirinin yaşam döngüsündeki yeri: gerçek bir sıra olduğu için adım göstergesi. */
+function Lifecycle({ status, round }: { status: string; round: number }) {
+  const steps = ['Gönderildi', 'Hakem incelemesi', round > 1 || status === 'revision_requested' ? 'Düzeltme turu' : 'Değerlendirmeler tamam', 'Karar']
+  const idx: Record<string, number> = { submitted: 0, under_review: round > 1 ? 2 : 1, reviews_complete: round > 1 ? 3 : 2, revision_requested: 2, accepted: 4, rejected: 3, withdrawn: 1 }
+  const failed = status === 'rejected' || status === 'withdrawn'
+  const labels = [...steps]
+  if (status === 'accepted') labels[3] = 'Kabul edildi'
+  if (status === 'rejected') labels[3] = 'Reddedildi'
+  if (status === 'withdrawn') labels[1] = 'Geri çekildi'
+  return <Steps steps={labels} current={idx[status] ?? 0} failed={failed} />
+}
+
 const reasonLabel: Record<string, string> = { auto: 'otomatik', manual: 'elle', disagreement: 'uyuşmazlık (4. hakem)', replacement: 'yerine atama', revision: 'düzeltme turu' }
 
 export default function SubmissionDetail() {
@@ -54,7 +67,8 @@ export default function SubmissionDetail() {
     <QueryState q={q}>
       {(s) => (
         <>
-          <PageTitle sub={<>#{s.id} · <Badge status={s.status} /> · tur {s.round} · sürüm {s.current_version} · {s.duration_minutes} dk</>}>{s.title}</PageTitle>
+          <PageTitle sub={<>Bildiri #{s.id}, {s.round}. tur, sürüm {s.current_version}, {s.duration_minutes} dakikalık sunum</>} actions={<Badge status={s.status} />}>{s.title}</PageTitle>
+          <Lifecycle status={s.status} round={s.round} />
           <div className="grid two">
             <Card title="Özet" actions={<button className="btn secondary small" onClick={() => void download(`/api/submissions/${s.id}/file`, `submission-${s.id}.pdf`)}>PDF indir</button>}>
               <p>{s.abstract}</p>
@@ -153,16 +167,18 @@ function RevisionForm({ id, onDone }: { id: number; onDone: () => void }) {
 }
 
 function Withdraw({ id, onDone }: { id: number; onDone: () => void }) {
+  const { confirm } = useFeedback()
   const m = useMutation({ mutationFn: () => api(`/api/submissions/${id}/withdraw`, { body: { reason: 'yazar isteği' } }), onSuccess: onDone })
   return (
     <p>
-      <button className="btn danger small" disabled={m.isPending} onClick={() => confirm('Bildiriyi geri çekmek istediğinize emin misiniz?') && m.mutate()}>Bildiriyi geri çek</button>
+      <button className="btn danger small" disabled={m.isPending} onClick={async () => (await confirm({ title: 'Bildiri geri çekilsin mi?', body: 'Hakem atamaları iptal edilir ve bildiri değerlendirmeden çıkar.', action: 'Geri çek', danger: true })) && m.mutate()}>Bildiriyi geri çek</button>
       {m.isError && <ErrorBox error={m.error} />}
     </p>
   )
 }
 
 function EditorPanel({ s, onDone }: { s: Submission; onDone: () => void }) {
+  const { toast } = useFeedback()
   const [reviewerId, setReviewerId] = useState('')
   const [decision, setDecision] = useState('accept')
   const [note, setNote] = useState('')
@@ -170,9 +186,9 @@ function EditorPanel({ s, onDone }: { s: Submission; onDone: () => void }) {
     queryKey: ['reviewers', s.keywords[0]],
     queryFn: () => api<Page<{ id: number; full_name: string; current_load: number; max_load: number; keywords: string[] }>>(`/api/reviewers?limit=50&keyword=${encodeURIComponent(s.keywords[0])}`),
   })
-  const assign = useMutation({ mutationFn: () => api(`/api/submissions/${s.id}/assignments`, { body: { reviewer_id: Number(reviewerId) } }), onSuccess: onDone })
+  const assign = useMutation({ mutationFn: () => api(`/api/submissions/${s.id}/assignments`, { body: { reviewer_id: Number(reviewerId) } }), onSuccess: () => { onDone(); toast('Hakem atandı') } })
   const release = useMutation({ mutationFn: (aid: number) => api(`/api/assignments/${aid}/release`, { body: { reason: 'editör' } }), onSuccess: onDone })
-  const decide = useMutation({ mutationFn: () => api(`/api/submissions/${s.id}/decision`, { body: { decision, note_to_author: note }, idempotent: true }), onSuccess: onDone })
+  const decide = useMutation({ mutationFn: () => api(`/api/submissions/${s.id}/decision`, { body: { decision, note_to_author: note }, idempotent: true }), onSuccess: () => { onDone(); toast(`Karar kaydedildi: ${recLabel[decision]}`) } })
   return (
     <div className="grid two">
       <Card title="Hakem atamaları">

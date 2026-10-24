@@ -1,9 +1,11 @@
+import { useRef } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
-import { api } from '../api'
+import { api, type Page, type Role } from '../api'
 import { useAuth } from '../auth'
 import { Card, PageTitle, QueryState, Stat } from '../components/ui'
-import { roleLabel, time } from '../format'
+import { Icon, type IconName } from '../components/icons'
+import { time } from '../format'
 
 interface Live {
   counts: Record<string, number>
@@ -14,74 +16,142 @@ interface Live {
 }
 
 const actionLabel: Record<string, string> = {
-  'registration.created': 'Yeni kayıt',
-  'registration.paid': 'Ödeme alındı',
+  'registration.created': 'Yeni kongre kaydı',
+  'registration.paid': 'Kayıt ücreti ödendi',
+  'registration.cancelled': 'Kayıt iptal edildi',
   'payment.initiated': 'Ödeme başlatıldı',
   'review.submitted': 'Değerlendirme gönderildi',
-  'review.reminder_sent': 'Hakem hatırlatması',
+  'review.reminder_sent': 'Hakeme hatırlatma gitti',
+  'review.disagreement_detected': 'Puan uyuşmazlığı: 4. hakem atandı',
   'assignment.created': 'Hakem atandı',
-  'assignment.expired': 'Süresi dolan atama',
-  'submission.created': 'Yeni bildiri',
+  'assignment.expired': 'Süresi dolan atama yeniden verildi',
+  'assignment.auto_run': 'Otomatik hakem ataması çalıştı',
+  'submission.created': 'Yeni bildiri gönderildi',
   'submission.status_changed': 'Bildiri durumu değişti',
-  'fx.recorded': 'Kur güncellendi',
-  'program.generated': 'Program oluşturuldu',
-  'certificate.issued': 'Sertifika üretildi',
+  'fx.recorded': 'EUR/TRY kuru güncellendi',
+  'program.generated': 'Program yeniden oluşturuldu',
+  'program.session_moved': 'Oturum taşındı',
+  'certificate.issued': 'Sertifika düzenlendi',
+  'seed.loaded': 'Demo verisi yüklendi',
+  'user.created': 'Yeni kullanıcı hesabı',
+  'room.created': 'Yeni salon eklendi',
+  'assignment.released': 'Hakem ataması geri alındı',
+  'assignment.declined': 'Hakem atamayı reddetti',
+  'registration.group_created': 'Grup kaydı açıldı',
+  'registration.requoted': 'Kayıt yeniden fiyatlandı',
 }
 
-const quick: Record<string, { to: string; label: string }[]> = {
-  author: [{ to: '/author/new', label: 'Yeni bildiri gönder' }, { to: '/author/submissions', label: 'Bildirilerimi gör' }],
-  reviewer: [{ to: '/reviewer', label: 'Bekleyen değerlendirmeler' }],
-  editor: [{ to: '/editor/assignments', label: 'Otomatik hakem ataması' }, { to: '/editor/program', label: 'Programı oluştur' }],
-  registrar: [{ to: '/registrar', label: 'Kayıtlar' }, { to: '/registrar/group', label: 'Grup kaydı' }],
-  attendee: [{ to: '/registration', label: 'Kayıt ol ve öde' }, { to: '/program', label: 'Programa göz at' }],
-  admin: [{ to: '/admin/audit', label: 'Denetim kaydı' }, { to: '/admin/users', label: 'Kullanıcılar' }],
+interface Next { to: string; title: string; desc: string; icon: IconName }
+
+const nextSteps: Record<Role, Next[]> = {
+  author: [
+    { to: '/author/submissions', title: 'Bildirilerimi izle', desc: 'Durum, hakem yorumları ve kararlar', icon: 'doc' },
+    { to: '/author/new', title: 'Yeni bildiri gönder', desc: 'PDF yükleyin, yazar bilgisi otomatik gizlenir', icon: 'plus' },
+    { to: '/registration', title: 'Kaydımı tamamla', desc: 'Programa alınmak için en az bir yazar ödemeli', icon: 'card' },
+  ],
+  reviewer: [
+    { to: '/reviewer', title: 'Bekleyen değerlendirmeler', desc: 'Yanıt süresi atamadan itibaren 14 gün', icon: 'check' },
+    { to: '/program', title: 'Kongre programı', desc: 'Oturumlar ve salonlar', icon: 'calendar' },
+  ],
+  editor: [
+    { to: '/editor/assignments', title: 'Hakemleri ata', desc: 'Uzmanlık, çıkar çatışması ve yük dengesiyle', icon: 'shuffle' },
+    { to: '/editor/submissions?disagreement=true', title: 'Karar bekleyenler', desc: 'Değerlendirmesi tamamlanan bildiriler', icon: 'doc' },
+    { to: '/editor/program', title: 'Programı kur', desc: 'Çakışmasız oturum planı, sürükle-bırak', icon: 'grid' },
+  ],
+  registrar: [
+    { to: '/registrar', title: 'Kayıtları izle', desc: 'Ödemeler canlı olarak düşer', icon: 'list' },
+    { to: '/registrar/group', title: 'Grup kaydı aç', desc: '5+ kişide her üyeye %10 indirim', icon: 'users' },
+    { to: '/registrar/invoices', title: 'Faturalar', desc: 'Boşluksuz numaralandırma', icon: 'receipt' },
+  ],
+  attendee: [
+    { to: '/registration', title: 'Kongreye kaydol', desc: 'Erken kayıt fiyatı şu an geçerli', icon: 'card' },
+    { to: '/program', title: 'Oturumları keşfet', desc: 'Beğendiklerini kendi programına ekle', icon: 'calendar' },
+    { to: '/certificates', title: 'Sertifika al', desc: 'QR kodla doğrulanabilir PDF', icon: 'award' },
+  ],
+  admin: [
+    { to: '/admin/audit', title: 'Denetim kaydı', desc: 'Kim, ne zaman, neyi değiştirdi', icon: 'shield' },
+    { to: '/admin/users', title: 'Kullanıcılar', desc: 'Roller ve kurumlar', icon: 'users' },
+    { to: '/reports', title: 'Raporlar', desc: 'Bildiri ve hakem istatistikleri', icon: 'chart' },
+  ],
+}
+
+function ReviewerQueue() {
+  const q = useQuery({ queryKey: ['my-assignments'], queryFn: () => api<Page<{ id: number; title: string; status: string; days_left: number }>>('/api/reviewer/assignments?status=assigned') })
+  if (!q.data || q.data.items.length === 0) return null
+  const urgent = [...q.data.items].sort((a, b) => a.days_left - b.days_left).slice(0, 3)
+  return (
+    <Card title={`Sizi bekleyen ${q.data.items.length} değerlendirme`}>
+      <ul className="feed">
+        {urgent.map((a) => (
+          <li key={a.id}>
+            <time style={{ color: a.days_left < 3 ? 'var(--tile)' : undefined }}>{a.days_left} gün</time>
+            <Link to={`/reviewer/assignments/${a.id}`}>{a.title}</Link>
+          </li>
+        ))}
+      </ul>
+    </Card>
+  )
 }
 
 export default function Dashboard() {
   const { user } = useAuth()
+  const seen = useRef<number>(0)
   // canlı akış: simülatörün ürettiği olaylar birkaç saniyede bir görünür
   const q = useQuery({ queryKey: ['live'], queryFn: () => api<Live>('/api/live'), refetchInterval: 3000 })
+  const hour = new Date().getHours()
+  const greet = hour < 12 ? 'Günaydın' : hour < 18 ? 'İyi günler' : 'İyi akşamlar'
+  const firstName = user!.full_name.replace(/^(Prof\.|Doç\.|Dr\.)\s*/g, '').replace(/^(Prof\.|Doç\.|Dr\.)\s*/g, '').split(' ')[0]
   return (
     <>
-      <PageTitle sub={`${roleLabel[user!.role]} olarak giriş yaptınız`}>Hoş geldiniz, {user!.full_name}</PageTitle>
-      <div className="actions" style={{ marginBottom: 18 }}>
-        {quick[user!.role].map((x) => (
-          <Link key={x.to} className="btn" to={x.to}>
-            {x.label}
+      <PageTitle sub="Kongreye 10 Mayıs 2027'de İstanbul'da başlıyoruz.">{greet}, {firstName}</PageTitle>
+
+      <div className="next-grid">
+        {nextSteps[user!.role].map((n) => (
+          <Link key={n.to} to={n.to} className="next">
+            <span className="next-icon"><Icon name={n.icon} /></span>
+            <span>
+              <strong>{n.title}</strong>
+              <small>{n.desc}</small>
+            </span>
           </Link>
         ))}
       </div>
-      <QueryState q={q}>
-        {(d) => (
-          <div className="grid two">
-            <Card title={<><span className="live-dot" />Sistem canlı</>}>
-              <div className="stats">
-                <Stat label="Bildiri" value={d.counts.submissions} />
-                <Stat label="Kayıt" value={d.counts.registrations} />
-                <Stat label="Ödenmiş kayıt" value={d.counts.paid_registrations} />
-                <Stat label="Açık hakem ataması" value={d.counts.open_assignments} />
-                <Stat label="Değerlendirme" value={d.counts.reviews} />
-                <Stat label="Olay / dk" value={d.events_per_minute} hint="son 1 dakika" />
-              </div>
-              <p className="hint" style={{ marginTop: 12 }}>
-                EUR/TRY kuru: <strong>{d.fx.rate}</strong> ({time(d.fx.observed_at)}) · sunucu saati {time(d.server_time)}
-              </p>
-            </Card>
-            <Card title="Son olaylar">
-              {d.recent_events.length === 0 ? (
-                <p className="muted">Henüz olay yok.</p>
-              ) : (
-                <ul className="feed">
-                  {d.recent_events.map((e) => (
-                    <li key={e.id}>
-                      <time>{time(e.at)}</time> {actionLabel[e.action] ?? e.action}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </Card>
-          </div>
-        )}
+
+      {user!.role === 'reviewer' && <ReviewerQueue />}
+
+      <QueryState q={q} rows={6}>
+        {(d) => {
+          const prev = seen.current
+          seen.current = d.recent_events[0]?.id ?? prev
+          return (
+            <div className="grid two">
+              <Card title={<><Icon name="pulse" /> Kongre şu anda</>}>
+                <div className="stats">
+                  <Stat label="Bildiri" value={d.counts.submissions} />
+                  <Stat label="Kayıt" value={d.counts.registrations} hint={`${d.counts.paid_registrations} ödenmiş`} />
+                  <Stat label="Açık hakem ataması" value={d.counts.open_assignments} />
+                  <Stat label="Değerlendirme" value={d.counts.reviews} />
+                </div>
+                <p className="hint" style={{ marginTop: 14 }}>
+                  1 EUR = <strong>{d.fx.rate}</strong> TRY ({time(d.fx.observed_at)} itibarıyla). TRY ile kaydolanların kuru kayıt anında sabitlenir.
+                </p>
+              </Card>
+              <Card title="Son hareketler" actions={<span className="hint">{d.events_per_minute} olay / dakika</span>}>
+                {d.recent_events.length === 0 ? (
+                  <p className="muted">Henüz hareket yok.</p>
+                ) : (
+                  <ul className="feed">
+                    {d.recent_events.slice(0, 9).map((e) => (
+                      <li key={e.id} className={prev && e.id > prev ? 'feed-new' : ''}>
+                        <time>{time(e.at)}</time> {actionLabel[e.action] ?? e.action}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </Card>
+            </div>
+          )
+        }}
       </QueryState>
     </>
   )

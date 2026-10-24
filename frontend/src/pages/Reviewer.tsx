@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link, useParams } from 'react-router-dom'
+import { useFeedback } from '../components/feedback'
 import { api, download, type Page } from '../api'
 import { Badge, Card, ErrorBox, Notice, PageTitle, QueryState } from '../components/ui'
 import { dt, recLabel } from '../format'
@@ -62,6 +63,7 @@ const criteria = [
 export function ReviewForm() {
   const { id } = useParams()
   const qc = useQueryClient()
+  const { toast, confirm } = useFeedback()
   const q = useQuery({ queryKey: ['assignment', id], queryFn: () => api<Assignment>(`/api/reviewer/assignments/${id}`) })
   const [scores, setScores] = useState<Record<string, number>>({ originality: 7, significance: 7, methodology: 7, clarity: 7 })
   const [rec, setRec] = useState('minor_revision')
@@ -73,6 +75,7 @@ export function ReviewForm() {
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ['assignment', id] })
       void qc.invalidateQueries({ queryKey: ['my-assignments'] })
+      toast('Değerlendirmeniz gönderildi, teşekkürler')
     },
   })
   const decline = useMutation({ mutationFn: () => api(`/api/reviewer/assignments/${id}/decline`, { body: { reason: 'uygun değilim' } }), onSuccess: () => void qc.invalidateQueries({ queryKey: ['my-assignments'] }) })
@@ -94,7 +97,7 @@ export function ReviewForm() {
             <Notice kind="ok">Atamayı reddettiniz; yerinize uygun bir hakem atandı.</Notice>
           ) : (
             <form onSubmit={(e: FormEvent) => { e.preventDefault(); submit.mutate() }}>
-              <Card title="Değerlendirme formu" actions={<span>Ağırlıklı puan: <strong>{weighted.toFixed(2)}</strong> / 10</span>}>
+              <Card title="Değerlendirme formu" actions={<span className="hint" style={{ textAlign: "right" }}>Ağırlıklı puan<div className="score-preview">{weighted.toFixed(2)}</div></span>}>
                 <div className="row">
                   {criteria.map(([k, label, w]) => (
                     <div className="field" key={k}>
@@ -113,7 +116,7 @@ export function ReviewForm() {
                 {decline.isError && <ErrorBox error={decline.error} />}
                 <div className="actions">
                   <button className="btn" disabled={submit.isPending}>Değerlendirmeyi gönder</button>
-                  <button type="button" className="btn ghost" onClick={() => confirm('Bu atamayı reddetmek istiyor musunuz?') && decline.mutate()}>Atamayı reddet</button>
+                  <button type="button" className="btn ghost" onClick={async () => (await confirm({ title: 'Atama reddedilsin mi?', body: 'Bildiri sizin yerinize uygun başka bir hakeme atanır.', action: 'Atamayı reddet', danger: true })) && decline.mutate()}>Atamayı reddet</button>
                 </div>
               </Card>
             </form>
