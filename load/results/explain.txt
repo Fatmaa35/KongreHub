@@ -1,0 +1,173 @@
+=== Q1: hatırlatma job'ı — vadesi gelen açık atamalar (review_assignments_open_due_idx, kısmi dizin) ===
+                                                    QUERY PLAN                                                    
+------------------------------------------------------------------------------------------------------------------
+ Limit (actual time=0.084..0.503 rows=100 loops=1)
+   Buffers: shared hit=56
+   ->  Index Scan using review_assignments_pkey on review_assignments (actual time=0.083..0.494 rows=100 loops=1)
+         Index Cond: (id > 0)
+         Filter: ((status = 'assigned'::text) AND (assigned_at <= (now() - '7 days'::interval)))
+         Rows Removed by Filter: 3207
+         Buffers: shared hit=56
+ Planning:
+   Buffers: shared hit=191
+ Planning Time: 0.489 ms
+ Execution Time: 0.528 ms
+(11 rows)
+
+                                                  QUERY PLAN                                                   
+---------------------------------------------------------------------------------------------------------------
+ Aggregate (actual time=12.529..12.530 rows=1 loops=1)
+   ->  Bitmap Heap Scan on review_assignments (actual time=1.725..11.990 rows=9343 loops=1)
+         Recheck Cond: ((due_at < now()) AND (status = 'assigned'::text))
+         Heap Blocks: exact=5485
+         ->  Bitmap Index Scan on review_assignments_open_due_idx (actual time=0.942..0.942 rows=9343 loops=1)
+               Index Cond: (due_at < now())
+ Planning Time: 0.072 ms
+ Execution Time: 12.576 ms
+(8 rows)
+
+BEGIN
+DROP INDEX
+--- dizinsiz ---
+                                               QUERY PLAN                                                
+---------------------------------------------------------------------------------------------------------
+ Finalize Aggregate (actual time=55.230..56.269 rows=1 loops=1)
+   ->  Gather (actual time=55.222..56.262 rows=3 loops=1)
+         Workers Planned: 2
+         Workers Launched: 2
+         ->  Partial Aggregate (actual time=48.506..48.507 rows=1 loops=3)
+               ->  Parallel Seq Scan on review_assignments (actual time=0.031..48.282 rows=3114 loops=3)
+                     Filter: ((status = 'assigned'::text) AND (due_at < now()))
+                     Rows Removed by Filter: 330382
+ Planning Time: 0.077 ms
+ Execution Time: 56.294 ms
+(10 rows)
+
+ROLLBACK
+=== Q2: editör listesi — duruma göre keyset sayfalama (submissions_status_id_idx) ===
+                                                 QUERY PLAN                                                 
+------------------------------------------------------------------------------------------------------------
+ Limit (actual time=0.016..0.058 rows=51 loops=1)
+   Buffers: shared hit=13
+   ->  Index Scan Backward using submissions_pkey on submissions (actual time=0.015..0.053 rows=51 loops=1)
+         Index Cond: (id < 150000)
+         Filter: (status = 'under_review'::text)
+         Rows Removed by Filter: 252
+         Buffers: shared hit=13
+ Planning:
+   Buffers: shared hit=88
+ Planning Time: 0.248 ms
+ Execution Time: 0.071 ms
+(11 rows)
+
+BEGIN
+DROP INDEX
+--- dizinsiz ---
+                                                 QUERY PLAN                                                 
+------------------------------------------------------------------------------------------------------------
+ Limit (actual time=0.009..0.045 rows=51 loops=1)
+   Buffers: shared hit=13
+   ->  Index Scan Backward using submissions_pkey on submissions (actual time=0.008..0.040 rows=51 loops=1)
+         Index Cond: (id < 150000)
+         Filter: (status = 'under_review'::text)
+         Rows Removed by Filter: 252
+         Buffers: shared hit=13
+ Planning:
+   Buffers: shared hit=4
+ Planning Time: 0.053 ms
+ Execution Time: 0.053 ms
+(11 rows)
+
+ROLLBACK
+=== Q3: hakemin açık atamaları (review_assignments_reviewer_idx) ===
+                                                            QUERY PLAN                                                             
+-----------------------------------------------------------------------------------------------------------------------------------
+ Bitmap Heap Scan on review_assignments (actual time=0.039..0.042 rows=4 loops=1)
+   Recheck Cond: ((reviewer_id = $1) AND (status = 'assigned'::text))
+   Heap Blocks: exact=2
+   InitPlan 2 (returns $1)
+     ->  Result (actual time=0.018..0.019 rows=1 loops=1)
+           InitPlan 1 (returns $0)
+             ->  Limit (actual time=0.017..0.017 rows=1 loops=1)
+                   ->  Index Only Scan using reviewer_profiles_pkey on reviewer_profiles (actual time=0.016..0.017 rows=1 loops=1)
+                         Index Cond: (user_id IS NOT NULL)
+                         Heap Fetches: 1
+   ->  Bitmap Index Scan on review_assignments_reviewer_idx (actual time=0.034..0.034 rows=4 loops=1)
+         Index Cond: ((reviewer_id = $1) AND (status = 'assigned'::text))
+ Planning Time: 0.162 ms
+ Execution Time: 0.076 ms
+(14 rows)
+
+BEGIN
+DROP INDEX
+--- dizinsiz ---
+                                                            QUERY PLAN                                                             
+-----------------------------------------------------------------------------------------------------------------------------------
+ Bitmap Heap Scan on review_assignments (actual time=2.887..10.544 rows=4 loops=1)
+   Recheck Cond: (status = 'assigned'::text)
+   Filter: (reviewer_id = $1)
+   Rows Removed by Filter: 16060
+   Heap Blocks: exact=8298
+   InitPlan 2 (returns $1)
+     ->  Result (actual time=0.011..0.013 rows=1 loops=1)
+           InitPlan 1 (returns $0)
+             ->  Limit (actual time=0.010..0.010 rows=1 loops=1)
+                   ->  Index Only Scan using reviewer_profiles_pkey on reviewer_profiles (actual time=0.009..0.009 rows=1 loops=1)
+                         Index Cond: (user_id IS NOT NULL)
+                         Heap Fetches: 1
+   ->  Bitmap Index Scan on review_assignments_open_due_idx (actual time=1.624..1.624 rows=16064 loops=1)
+ Planning Time: 0.072 ms
+ Execution Time: 10.558 ms
+(15 rows)
+
+ROLLBACK
+=== Q2b: seyrek durum (revision_requested, ~10 satır) — dizinin asıl kazandırdığı yer ===
+                                                 QUERY PLAN                                                  
+-------------------------------------------------------------------------------------------------------------
+ Limit (actual time=0.055..0.057 rows=10 loops=1)
+   Buffers: shared hit=3 read=5
+   ->  Sort (actual time=0.054..0.055 rows=10 loops=1)
+         Sort Key: id DESC
+         Sort Method: quicksort  Memory: 26kB
+         Buffers: shared hit=3 read=5
+         ->  Bitmap Heap Scan on submissions (actual time=0.031..0.038 rows=10 loops=1)
+               Recheck Cond: (status = 'revision_requested'::text)
+               Heap Blocks: exact=2
+               Buffers: shared read=5
+               ->  Bitmap Index Scan on submissions_status_id_idx (actual time=0.019..0.020 rows=10 loops=1)
+                     Index Cond: (status = 'revision_requested'::text)
+                     Buffers: shared read=3
+ Planning:
+   Buffers: shared hit=19
+ Planning Time: 0.172 ms
+ Execution Time: 0.069 ms
+(17 rows)
+
+BEGIN
+DROP INDEX
+--- dizinsiz ---
+                                          QUERY PLAN                                           
+-----------------------------------------------------------------------------------------------
+ Limit (actual time=18.987..21.303 rows=10 loops=1)
+   Buffers: shared hit=3709 read=2112
+   ->  Gather Merge (actual time=18.986..21.300 rows=10 loops=1)
+         Workers Planned: 2
+         Workers Launched: 2
+         Buffers: shared hit=3709 read=2112
+         ->  Sort (actual time=14.111..14.112 rows=3 loops=3)
+               Sort Key: id DESC
+               Sort Method: quicksort  Memory: 26kB
+               Buffers: shared hit=3709 read=2112
+               Worker 0:  Sort Method: quicksort  Memory: 25kB
+               Worker 1:  Sort Method: quicksort  Memory: 25kB
+               ->  Parallel Seq Scan on submissions (actual time=8.515..14.065 rows=3 loops=3)
+                     Filter: (status = 'revision_requested'::text)
+                     Rows Removed by Filter: 66830
+                     Buffers: shared hit=3637 read=2112
+ Planning:
+   Buffers: shared hit=4
+ Planning Time: 0.050 ms
+ Execution Time: 21.316 ms
+(20 rows)
+
+ROLLBACK

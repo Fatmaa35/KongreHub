@@ -1,0 +1,32 @@
+
+     ✓ submissions 200
+     ✓ program 200
+     ✓ live 200
+     ✓ fx 200
+     ✓ registration 201
+     ✓ payment 201 paid
+
+   ✓ checkout_duration..............: avg=345.86ms min=15ms     med=304.5ms  p(90)=579.3ms  p(95)=895.09ms p(99)=1.22s    max=1.46s   
+     checks.........................: 100.00% 20138 out of 20138
+     data_received..................: 171 MB  1.8 MB/s
+     data_sent......................: 7.6 MB  79 kB/s
+     http_req_blocked...............: avg=20.29µs  min=890ns    med=3.47µs   p(90)=5.75µs   p(95)=7.25µs   p(99)=49.37µs  max=231.88ms
+     http_req_connecting............: avg=3.02µs   min=0s       med=0s       p(90)=0s       p(95)=0s       p(99)=0s       max=8.2ms   
+     http_req_duration..............: avg=6.07ms   min=176.95µs med=1.76ms   p(90)=5.55ms   p(95)=8.62ms   p(99)=71.57ms  max=1.5s    
+       { expected_response:true }...: avg=6.07ms   min=176.95µs med=1.76ms   p(90)=5.55ms   p(95)=8.62ms   p(99)=71.57ms  max=1.5s    
+     ✓ { scenario:editor }..........: avg=3.37ms   min=654.49µs med=1.25ms   p(90)=2.72ms   p(95)=4.71ms   p(99)=30.2ms   max=538.85ms
+     ✓ { scenario:read_mix }........: avg=2.6ms    min=176.95µs med=1.84ms   p(90)=5.16ms   p(95)=6.97ms   p(99)=14.07ms  max=406.52ms
+   ✓ http_req_failed................: 0.00%   0 out of 20361
+     http_req_receiving.............: avg=125.1µs  min=5.72µs   med=56.94µs  p(90)=214.67µs p(95)=399.36µs p(99)=1.37ms   max=13.12ms 
+     http_req_sending...............: avg=27.62µs  min=2.89µs   med=11.64µs  p(90)=34.34µs  p(95)=56.61µs  p(99)=253.66µs max=8.29ms  
+     http_req_tls_handshaking.......: avg=0s       min=0s       med=0s       p(90)=0s       p(95)=0s       p(99)=0s       max=0s      
+     http_req_waiting...............: avg=5.92ms   min=154.79µs med=1.64ms   p(90)=5.27ms   p(95)=8.23ms   p(99)=71.43ms  max=1.5s    
+     http_reqs......................: 20361   213.060049/s
+     ✓ { scenario:checkout }........: 300     3.139237/s
+     ✓ { scenario:editor }..........: 2220    23.230357/s
+     ✓ { scenario:read_mix }........: 17718   185.403366/s
+     iteration_duration.............: avg=546.33ms min=58.17ms  med=507.34ms p(90)=523.24ms p(95)=1s       p(99)=1.01s    max=2.27s   
+     iterations.....................: 6450    67.493606/s
+     vus............................: 5       min=0              max=45
+     vus_max........................: 65      min=65             max=65
+

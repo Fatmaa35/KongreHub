@@ -23,6 +23,10 @@ export const options = {
     'http_req_duration{scenario:read_mix}': ['p(95)<300'],
     'http_req_duration{scenario:editor}': ['p(95)<500'],
     checkout_duration: ['p(95)<1500'],
+    // senaryo bazında istek sayıları özet dosyasına düşsün diye
+    'http_reqs{scenario:read_mix}': ['count>0'],
+    'http_reqs{scenario:editor}': ['count>0'],
+    'http_reqs{scenario:checkout}': ['count>0'],
   },
   summaryTrendStats: ['avg', 'min', 'med', 'p(90)', 'p(95)', 'p(99)', 'max'],
 }

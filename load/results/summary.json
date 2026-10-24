@@ -1,320 +1,19 @@
 {
-    "metrics": {
-        "http_req_sending": {
-            "med": 0.0118995,
-            "p(90)": 0.03500380000000005,
-            "p(95)": 0.0580005,
-            "p(99)": 0.28480814000000004,
-            "max": 11.198526,
-            "avg": 0.028120758578311006,
-            "min": 0.002855
-        },
-        "http_req_connecting": {
-            "min": 0,
-            "med": 0,
-            "p(90)": 0,
-            "p(95)": 0,
-            "p(99)": 0,
-            "max": 12.625281,
-            "avg": 0.005434266148854586
-        },
-        "iteration_duration": {
-            "med": 508.135707,
-            "p(90)": 522.4189318,
-            "p(95)": 1007.8390948,
-            "p(99)": 1018.134286,
-            "max": 1475.955208,
-            "avg": 543.2683808362596,
-            "min": 55.417
-        },
-        "http_req_tls_handshaking": {
-            "p(99)": 0,
-            "max": 0,
-            "avg": 0,
-            "min": 0,
-            "med": 0,
-            "p(90)": 0,
-            "p(95)": 0
-        },
-        "http_req_failed": {
-            "fails": 20342,
-            "passes": 0,
-            "thresholds": {
-                "rate<0.01": false
-            },
-            "value": 0
-        },
-        "http_req_waiting": {
-            "p(90)": 5.9139262000000015,
-            "p(95)": 8.876850350000003,
-            "p(99)": 55.93037705000001,
-            "max": 792.040245,
-            "avg": 4.842611337872411,
-            "min": 0.156453,
-            "med": 1.8136315
-        },
-        "http_req_blocked": {
-            "avg": 0.012151710205486072,
-            "min": 0.000837,
-            "med": 0.003604,
-            "p(90)": 0.005976800000000003,
-            "p(95)": 0.007572900000000001,
-            "p(99)": 0.05232666000000004,
-            "max": 12.685067
-        },
-        "http_reqs": {
-            "count": 20342,
-            "rate": 215.1418490874753
-        },
-        "data_sent": {
-            "count": 7577629,
-            "rate": 80142.81362495705
-        },
-        "http_req_duration{scenario:read_mix}": {
-            "min": 0.172434,
-            "med": 2.000268,
-            "p(90)": 5.869456400000003,
-            "p(95)": 7.864928749999996,
-            "p(99)": 12.668499659999998,
-            "max": 64.913912,
-            "avg": 2.720727570306321,
-            "thresholds": {
-                "p(95)<300": false
-            }
-        },
-        "checks": {
-            "passes": 20119,
-            "fails": 0,
-            "value": 1
-        },
-        "vus_max": {
-            "max": 65,
-            "value": 65,
-            "min": 65
-        },
-        "http_req_duration{expected_response:true}": {
-            "p(95)": 9.284911750000001,
-            "p(99)": 56.00514781000001,
-            "max": 792.185431,
-            "avg": 5.007141134794993,
-            "min": 0.172434,
-            "med": 1.943299,
-            "p(90)": 6.255425100000004
-        },
-        "iterations": {
-            "count": 6443,
-            "rate": 68.1427064040214
-        },
-        "data_received": {
-            "count": 171315081,
-            "rate": 1811869.2017948385
-        },
-        "http_req_duration{scenario:editor}": {
-            "max": 288.744634,
-            "avg": 2.940352103370783,
-            "min": 0.544331,
-            "med": 1.343972,
-            "p(90)": 3.7054218,
-            "p(95)": 5.436677199999977,
-            "p(99)": 24.182534239999875,
-            "thresholds": {
-                "p(95)<500": false
-            }
-        },
-        "checkout_duration": {
-            "avg": 297.42,
-            "min": 6,
-            "med": 267,
-            "p(90)": 565.2,
-            "p(95)": 683.1499999999999,
-            "p(99)": 875.0500000000001,
-            "max": 880,
-            "thresholds": {
-                "p(95)<1500": false
-            }
-        },
-        "http_req_receiving": {
-            "p(90)": 0.22867850000000048,
-            "p(95)": 0.4692967000000001,
-            "p(99)": 1.7213573200000016,
-            "max": 7.682609,
-            "avg": 0.13640903834431176,
-            "min": 0.00653,
-            "med": 0.057286000000000004
-        },
-        "http_req_duration": {
-            "p(99)": 56.00514781000001,
-            "max": 792.185431,
-            "avg": 5.007141134794993,
-            "min": 0.172434,
-            "med": 1.943299,
-            "p(90)": 6.255425100000004,
-            "p(95)": 9.284911750000001
-        },
-        "vus": {
-            "value": 7,
-            "min": 0,
-            "max": 45
-        }
-    },
-    "setup_data": {
-        "editor": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiZWRpdG9yIiwibmFtZSI6IlByb2YuIERyLiBMZXlsYSBFZGl0w7ZyIiwiaXNzIjoia29uZ3JlaHViIiwic3ViIjoiMiIsImV4cCI6MTc5Mjg2MDU5NywiaWF0IjoxNzkyODU5Njk3fQ.mxHfMvPdl84PRMZubAbViFqj01FLlIbicbrDUGd8oJM",
-        "readers": [
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXR0ZW5kZWUiLCJuYW1lIjoiS2F0xLFsxLFtY8SxIFNlbGluIiwiaXNzIjoia29uZ3JlaHViIiwic3ViIjoiNiIsImV4cCI6MTc5Mjg2MDU5NywiaWF0IjoxNzkyODU5Njk3fQ.1jU8ZqHZVnjw_o11lYkCmgzGNHLQ-R2P2wBYtoglJFQ",
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXR0ZW5kZWUiLCJuYW1lIjoiWmV5bmVwIFNpbmdoIiwiaXNzIjoia29uZ3JlaHViIiwic3ViIjoiODYwIiwiZXhwIjoxNzkyODYwNTk3LCJpYXQiOjE3OTI4NTk2OTd9.pO8DqPN8rMaJ3KvLos4ke5bexsbWLKrjhaFKvYd2Kl4",
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXR0ZW5kZWUiLCJuYW1lIjoiSm9uYXMgQmlhbmNoaSIsImlzcyI6ImtvbmdyZWh1YiIsInN1YiI6Ijg2MSIsImV4cCI6MTc5Mjg2MDU5NywiaWF0IjoxNzkyODU5Njk3fQ.hVztAnno8BnRv3GmdPCwCAihv4dpnC51QzBu4Rf4-CA",
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXR0ZW5kZWUiLCJuYW1lIjoiTHVjw61hIMOHZWxpayIsImlzcyI6ImtvbmdyZWh1YiIsInN1YiI6Ijg2MiIsImV4cCI6MTc5Mjg2MDU5OCwiaWF0IjoxNzkyODU5Njk4fQ.E8pBmnbA3gjY4c-PXFzv4cD6dFYHDMsLZhJQSXhx3OU",
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXR0ZW5kZWUiLCJuYW1lIjoiU2Vya2FuIMOWemthbiIsImlzcyI6ImtvbmdyZWh1YiIsInN1YiI6Ijg2MyIsImV4cCI6MTc5Mjg2MDU5OCwiaWF0IjoxNzkyODU5Njk4fQ.wT9r5pwVGEouFC6pO08rEfhlzJ4KsXy_FDPt3RADECk",
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXR0ZW5kZWUiLCJuYW1lIjoiTWVpIFBhcmsiLCJpc3MiOiJrb25ncmVodWIiLCJzdWIiOiI4NjQiLCJleHAiOjE3OTI4NjA1OTgsImlhdCI6MTc5Mjg1OTY5OH0.r9gRqLWmo6Lwf7rXWSg0nqpq0MBWjPqC_tal5h0cInE",
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXR0ZW5kZWUiLCJuYW1lIjoiR2l1bGlhIFNpbmdoIiwiaXNzIjoia29uZ3JlaHViIiwic3ViIjoiODY1IiwiZXhwIjoxNzkyODYwNTk4LCJpYXQiOjE3OTI4NTk2OTh9.0KuPBruAcoQYxszvnXVIA30HfzQ8H40awW_zjK2jSlI",
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXR0ZW5kZWUiLCJuYW1lIjoiTHVrYXMgxZ5pbcWfZWsiLCJpc3MiOiJrb25ncmVodWIiLCJzdWIiOiI4NjYiLCJleHAiOjE3OTI4NjA1OTgsImlhdCI6MTc5Mjg1OTY5OH0.Uubrfp0T96dEc4MGdM7DLGR5BQk6IZaWUM4aFVsBtaE",
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXR0ZW5kZWUiLCJuYW1lIjoiTWVobWV0IMOcbmFsIiwiaXNzIjoia29uZ3JlaHViIiwic3ViIjoiODY3IiwiZXhwIjoxNzkyODYwNTk4LCJpYXQiOjE3OTI4NTk2OTh9.feAyayggvG7CmZ1ZfLKmEnNbMtnWoKD64rW0GHZ4Zh0",
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXR0ZW5kZWUiLCJuYW1lIjoiRW1yZSBEZW1pciIsImlzcyI6ImtvbmdyZWh1YiIsInN1YiI6Ijg2OCIsImV4cCI6MTc5Mjg2MDU5OCwiaWF0IjoxNzkyODU5Njk4fQ.RiaQsCXAkw8k8Bx5zFLswRjjJzb3wU4iutfynwBaVFI",
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXR0ZW5kZWUiLCJuYW1lIjoiSGlybyBEdWJvaXMiLCJpc3MiOiJrb25ncmVodWIiLCJzdWIiOiI4NjkiLCJleHAiOjE3OTI4NjA1OTgsImlhdCI6MTc5Mjg1OTY5OH0.XsTKAosVLoxxBmRmcrXMGR49XE4Qbwj6Sj3xAuB4NN4",
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXR0ZW5kZWUiLCJuYW1lIjoiTHVjw61hIEFsaSIsImlzcyI6ImtvbmdyZWh1YiIsInN1YiI6Ijg3MCIsImV4cCI6MTc5Mjg2MDU5OCwiaWF0IjoxNzkyODU5Njk4fQ.TPThcfdf-C-1gTYCm7Jj-Q04DMq2kSVgTUewkMySk_c",
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXR0ZW5kZWUiLCJuYW1lIjoiTWVobWV0IEthcmEiLCJpc3MiOiJrb25ncmVodWIiLCJzdWIiOiI4NzEiLCJleHAiOjE3OTI4NjA1OTgsImlhdCI6MTc5Mjg1OTY5OH0.KOYPfPgYvfLYF__MTL5WzJ1vtjdliRKXnUrejd8DsNM",
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXR0ZW5kZWUiLCJuYW1lIjoiTGF5bGEgS2ltIiwiaXNzIjoia29uZ3JlaHViIiwic3ViIjoiODcyIiwiZXhwIjoxNzkyODYwNTk4LCJpYXQiOjE3OTI4NTk2OTh9.E3e0SkHfEIEyOE2dCX8fp1j3nfsJMQAaKUGIGe2NFrw",
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXR0ZW5kZWUiLCJuYW1lIjoiTGlhbSBUYW5ha2EiLCJpc3MiOiJrb25ncmVodWIiLCJzdWIiOiI4NzMiLCJleHAiOjE3OTI4NjA1OTgsImlhdCI6MTc5Mjg1OTY5OH0.JiDvOznllMs5HKTj3sP9_W3IhkQfw6YxS1A1A-y07N0",
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXR0ZW5kZWUiLCJuYW1lIjoiS2VyZW0gS2F5YSIsImlzcyI6ImtvbmdyZWh1YiIsInN1YiI6Ijg3NCIsImV4cCI6MTc5Mjg2MDU5OCwiaWF0IjoxNzkyODU5Njk4fQ.HC6xTolqnP8vVcjlZNAHAV294Yjf1cXIlK9oQFS916I",
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXR0ZW5kZWUiLCJuYW1lIjoiV2VpIEFyc2xhbiIsImlzcyI6ImtvbmdyZWh1YiIsInN1YiI6Ijg3NSIsImV4cCI6MTc5Mjg2MDU5OCwiaWF0IjoxNzkyODU5Njk4fQ.lwunnGdmqT9x62i-lN_HlREsqXUt-dNPDRa2RcCbFUI",
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXR0ZW5kZWUiLCJuYW1lIjoiTWFyY28gWcSxbGTEsXoiLCJpc3MiOiJrb25ncmVodWIiLCJzdWIiOiI4NzYiLCJleHAiOjE3OTI4NjA1OTgsImlhdCI6MTc5Mjg1OTY5OH0.auOGT1fMQT6XKVMqEqCsFEctoLl1Vm16fb5Zay5u6qc",
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXR0ZW5kZWUiLCJuYW1lIjoiTXVzdGFmYSDDlnpkZW1pciIsImlzcyI6ImtvbmdyZWh1YiIsInN1YiI6Ijg3NyIsImV4cCI6MTc5Mjg2MDU5OCwiaWF0IjoxNzkyODU5Njk4fQ.7VlkUYME6gN3zqKPOP8oPaEjhv7dAc3rdA56L9QqwU4",
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXR0ZW5kZWUiLCJuYW1lIjoiQ2xhcmEgTm92YWsiLCJpc3MiOiJrb25ncmVodWIiLCJzdWIiOiI4NzgiLCJleHAiOjE3OTI4NjA1OTgsImlhdCI6MTc5Mjg1OTY5OH0.xTLZS1gAJcwrbvRwRdPx1YMucY-QfFBwoXO2kT2OmeE"
-        ],
-        "buyers": [
-            "k6.1792859698543.0@load.example",
-            "k6.1792859698543.1@load.example",
-            "k6.1792859698543.2@load.example",
-            "k6.1792859698543.3@load.example",
-            "k6.1792859698543.4@load.example",
-            "k6.1792859698543.5@load.example",
-            "k6.1792859698543.6@load.example",
-            "k6.1792859698543.7@load.example",
-            "k6.1792859698543.8@load.example",
-            "k6.1792859698543.9@load.example",
-            "k6.1792859698543.10@load.example",
-            "k6.1792859698543.11@load.example",
-            "k6.1792859698543.12@load.example",
-            "k6.1792859698543.13@load.example",
-            "k6.1792859698543.14@load.example",
-            "k6.1792859698543.15@load.example",
-            "k6.1792859698543.16@load.example",
-            "k6.1792859698543.17@load.example",
-            "k6.1792859698543.18@load.example",
-            "k6.1792859698543.19@load.example",
-            "k6.1792859698543.20@load.example",
-            "k6.1792859698543.21@load.example",
-            "k6.1792859698543.22@load.example",
-            "k6.1792859698543.23@load.example",
-            "k6.1792859698543.24@load.example",
-            "k6.1792859698543.25@load.example",
-            "k6.1792859698543.26@load.example",
-            "k6.1792859698543.27@load.example",
-            "k6.1792859698543.28@load.example",
-            "k6.1792859698543.29@load.example",
-            "k6.1792859698543.30@load.example",
-            "k6.1792859698543.31@load.example",
-            "k6.1792859698543.32@load.example",
-            "k6.1792859698543.33@load.example",
-            "k6.1792859698543.34@load.example",
-            "k6.1792859698543.35@load.example",
-            "k6.1792859698543.36@load.example",
-            "k6.1792859698543.37@load.example",
-            "k6.1792859698543.38@load.example",
-            "k6.1792859698543.39@load.example",
-            "k6.1792859698543.40@load.example",
-            "k6.1792859698543.41@load.example",
-            "k6.1792859698543.42@load.example",
-            "k6.1792859698543.43@load.example",
-            "k6.1792859698543.44@load.example",
-            "k6.1792859698543.45@load.example",
-            "k6.1792859698543.46@load.example",
-            "k6.1792859698543.47@load.example",
-            "k6.1792859698543.48@load.example",
-            "k6.1792859698543.49@load.example",
-            "k6.1792859698543.50@load.example",
-            "k6.1792859698543.51@load.example",
-            "k6.1792859698543.52@load.example",
-            "k6.1792859698543.53@load.example",
-            "k6.1792859698543.54@load.example",
-            "k6.1792859698543.55@load.example",
-            "k6.1792859698543.56@load.example",
-            "k6.1792859698543.57@load.example",
-            "k6.1792859698543.58@load.example",
-            "k6.1792859698543.59@load.example",
-            "k6.1792859698543.60@load.example",
-            "k6.1792859698543.61@load.example",
-            "k6.1792859698543.62@load.example",
-            "k6.1792859698543.63@load.example",
-            "k6.1792859698543.64@load.example",
-            "k6.1792859698543.65@load.example",
-            "k6.1792859698543.66@load.example",
-            "k6.1792859698543.67@load.example",
-            "k6.1792859698543.68@load.example",
-            "k6.1792859698543.69@load.example",
-            "k6.1792859698543.70@load.example",
-            "k6.1792859698543.71@load.example",
-            "k6.1792859698543.72@load.example",
-            "k6.1792859698543.73@load.example",
-            "k6.1792859698543.74@load.example",
-            "k6.1792859698543.75@load.example",
-            "k6.1792859698543.76@load.example",
-            "k6.1792859698543.77@load.example",
-            "k6.1792859698543.78@load.example",
-            "k6.1792859698543.79@load.example",
-            "k6.1792859698543.80@load.example",
-            "k6.1792859698543.81@load.example",
-            "k6.1792859698543.82@load.example",
-            "k6.1792859698543.83@load.example",
-            "k6.1792859698543.84@load.example",
-            "k6.1792859698543.85@load.example",
-            "k6.1792859698543.86@load.example",
-            "k6.1792859698543.87@load.example",
-            "k6.1792859698543.88@load.example",
-            "k6.1792859698543.89@load.example",
-            "k6.1792859698543.90@load.example",
-            "k6.1792859698543.91@load.example",
-            "k6.1792859698543.92@load.example",
-            "k6.1792859698543.93@load.example",
-            "k6.1792859698543.94@load.example",
-            "k6.1792859698543.95@load.example",
-            "k6.1792859698543.96@load.example",
-            "k6.1792859698543.97@load.example",
-            "k6.1792859698543.98@load.example",
-            "k6.1792859698543.99@load.example"
-        ]
-    },
     "root_group": {
-        "name": "",
-        "path": "",
         "id": "d41d8cd98f00b204e9800998ecf8427e",
         "groups": {},
         "checks": {
                 "submissions 200": {
-                    "passes": 2225,
-                    "fails": 0,
                     "name": "submissions 200",
                     "path": "::submissions 200",
-                    "id": "214c4d06af0f968fd70e07dfb277a9b2"
-                },
-                "registration 201": {
-                    "name": "registration 201",
-                    "path": "::registration 201",
-                    "id": "2649fe104fd6c2b722ae45ee6dcde515",
-                    "passes": 100,
-                    "fails": 0
-                },
-                "payment 201 paid": {
-                    "name": "payment 201 paid",
-                    "path": "::payment 201 paid",
-                    "id": "b5dee4a62e56d74093d28a208d11eab0",
-                    "passes": 100,
+                    "id": "214c4d06af0f968fd70e07dfb277a9b2",
+                    "passes": 2220,
                     "fails": 0
                 },
                 "program 200": {
                     "path": "::program 200",
                     "id": "1f40016d030fbf18c796e6e493f17555",
-                    "passes": 5898,
+                    "passes": 5906,
                     "fails": 0,
                     "name": "program 200"
                 },
@@ -322,16 +21,338 @@
                     "name": "live 200",
                     "path": "::live 200",
                     "id": "828b1c4fdf21bbf618219b74198c1776",
-                    "passes": 5898,
+                    "passes": 5906,
                     "fails": 0
                 },
                 "fx 200": {
-                    "id": "fd997f58e557c1f61211076875b93b87",
-                    "passes": 5898,
-                    "fails": 0,
                     "name": "fx 200",
-                    "path": "::fx 200"
+                    "path": "::fx 200",
+                    "id": "fd997f58e557c1f61211076875b93b87",
+                    "passes": 5906,
+                    "fails": 0
+                },
+                "registration 201": {
+                    "fails": 0,
+                    "name": "registration 201",
+                    "path": "::registration 201",
+                    "id": "2649fe104fd6c2b722ae45ee6dcde515",
+                    "passes": 100
+                },
+                "payment 201 paid": {
+                    "passes": 100,
+                    "fails": 0,
+                    "name": "payment 201 paid",
+                    "path": "::payment 201 paid",
+                    "id": "b5dee4a62e56d74093d28a208d11eab0"
                 }
+            },
+        "name": "",
+        "path": ""
+    },
+    "metrics": {
+        "iterations": {
+            "count": 6450,
+            "rate": 67.49360610066645
+        },
+        "http_req_duration{expected_response:true}": {
+            "max": 1509.361466,
+            "avg": 6.0796022488090085,
+            "min": 0.176955,
+            "med": 1.763695,
+            "p(90)": 5.550918,
+            "p(95)": 8.620703,
+            "p(99)": 71.57790840000084
+        },
+        "vus_max": {
+            "value": 65,
+            "min": 65,
+            "max": 65
+        },
+        "data_received": {
+            "count": 171414281,
+            "rate": 1793700.459200458
+        },
+        "http_req_duration{scenario:read_mix}": {
+            "p(90)": 5.168833200000001,
+            "p(95)": 6.974756699999992,
+            "p(99)": 14.07639058999997,
+            "max": 406.525322,
+            "avg": 2.6053508687775335,
+            "min": 0.176955,
+            "med": 1.8442150000000002,
+            "thresholds": {
+                "p(95)<300": false
             }
+        },
+        "http_req_failed": {
+            "passes": 0,
+            "fails": 20361,
+            "thresholds": {
+                "rate<0.01": false
+            },
+            "value": 0
+        },
+        "data_sent": {
+            "count": 7584512,
+            "rate": 79365.28145639968
+        },
+        "checks": {
+            "passes": 20138,
+            "fails": 0,
+            "value": 1
+        },
+        "http_req_sending": {
+            "p(99)": 0.2536612000000042,
+            "max": 8.298026,
+            "avg": 0.02762181287756007,
+            "min": 0.002894,
+            "med": 0.011644,
+            "p(90)": 0.034343,
+            "p(95)": 0.05661
+        },
+        "http_reqs{scenario:checkout}": {
+            "count": 300,
+            "rate": 3.1392374930542535,
+            "thresholds": {
+                "count>0": false
+            }
+        },
+        "http_reqs{scenario:editor}": {
+            "count": 2220,
+            "rate": 23.230357448601477,
+            "thresholds": {
+                "count>0": false
+            }
+        },
+        "checkout_duration": {
+            "p(90)": 579.3000000000003,
+            "p(95)": 895.0999999999997,
+            "p(99)": 1220.4900000000014,
+            "max": 1467,
+            "avg": 345.86,
+            "min": 15,
+            "med": 304.5,
+            "thresholds": {
+                "p(95)<1500": false
+            }
+        },
+        "http_req_blocked": {
+            "avg": 0.020292486518343797,
+            "min": 0.00089,
+            "med": 0.003477,
+            "p(90)": 0.005755,
+            "p(95)": 0.007258,
+            "p(99)": 0.049377600000000195,
+            "max": 231.886331
+        },
+        "http_req_connecting": {
+            "p(95)": 0,
+            "p(99)": 0,
+            "max": 8.20779,
+            "avg": 0.003020574333284221,
+            "min": 0,
+            "med": 0,
+            "p(90)": 0
+        },
+        "http_req_receiving": {
+            "avg": 0.12510226693187906,
+            "min": 0.005727,
+            "med": 0.056946,
+            "p(90)": 0.214677,
+            "p(95)": 0.399366,
+            "p(99)": 1.3720470000000033,
+            "max": 13.127481
+        },
+        "vus": {
+            "min": 0,
+            "max": 45,
+            "value": 5
+        },
+        "http_reqs{scenario:read_mix}": {
+            "count": 17718,
+            "rate": 185.4033663397842,
+            "thresholds": {
+                "count>0": false
+            }
+        },
+        "http_reqs": {
+            "count": 20361,
+            "rate": 213.0600486535922
+        },
+        "http_req_waiting": {
+            "min": 0.154793,
+            "med": 1.644294,
+            "p(90)": 5.27115,
+            "p(95)": 8.234713,
+            "p(99)": 71.43695660000057,
+            "max": 1508.761023,
+            "avg": 5.926878168999555
+        },
+        "http_req_duration": {
+            "med": 1.763695,
+            "p(90)": 5.550918,
+            "p(95)": 8.620703,
+            "p(99)": 71.57790840000084,
+            "max": 1509.361466,
+            "avg": 6.0796022488090085,
+            "min": 0.176955
+        },
+        "http_req_tls_handshaking": {
+            "max": 0,
+            "avg": 0,
+            "min": 0,
+            "med": 0,
+            "p(90)": 0,
+            "p(95)": 0,
+            "p(99)": 0
+        },
+        "iteration_duration": {
+            "max": 2272.521431,
+            "avg": 546.3318022246509,
+            "min": 58.171377,
+            "med": 507.3467375,
+            "p(90)": 523.246716,
+            "p(95)": 1007.71182275,
+            "p(99)": 1015.8243371100001
+        },
+        "http_req_duration{scenario:editor}": {
+            "avg": 3.376407472522516,
+            "min": 0.654498,
+            "med": 1.2540974999999999,
+            "p(90)": 2.724581900000003,
+            "p(95)": 4.711341249999986,
+            "p(99)": 30.20636948999993,
+            "max": 538.857829,
+            "thresholds": {
+                "p(95)<500": false
+            }
+        }
+    },
+    "setup_data": {
+        "buyers": [
+            "k6.1792860391670.0@load.example",
+            "k6.1792860391670.1@load.example",
+            "k6.1792860391670.2@load.example",
+            "k6.1792860391670.3@load.example",
+            "k6.1792860391670.4@load.example",
+            "k6.1792860391670.5@load.example",
+            "k6.1792860391670.6@load.example",
+            "k6.1792860391670.7@load.example",
+            "k6.1792860391670.8@load.example",
+            "k6.1792860391670.9@load.example",
+            "k6.1792860391670.10@load.example",
+            "k6.1792860391670.11@load.example",
+            "k6.1792860391670.12@load.example",
+            "k6.1792860391670.13@load.example",
+            "k6.1792860391670.14@load.example",
+            "k6.1792860391670.15@load.example",
+            "k6.1792860391670.16@load.example",
+            "k6.1792860391670.17@load.example",
+            "k6.1792860391670.18@load.example",
+            "k6.1792860391670.19@load.example",
+            "k6.1792860391670.20@load.example",
+            "k6.1792860391670.21@load.example",
+            "k6.1792860391670.22@load.example",
+            "k6.1792860391670.23@load.example",
+            "k6.1792860391670.24@load.example",
+            "k6.1792860391670.25@load.example",
+            "k6.1792860391670.26@load.example",
+            "k6.1792860391670.27@load.example",
+            "k6.1792860391670.28@load.example",
+            "k6.1792860391670.29@load.example",
+            "k6.1792860391670.30@load.example",
+            "k6.1792860391670.31@load.example",
+            "k6.1792860391670.32@load.example",
+            "k6.1792860391670.33@load.example",
+            "k6.1792860391670.34@load.example",
+            "k6.1792860391670.35@load.example",
+            "k6.1792860391670.36@load.example",
+            "k6.1792860391670.37@load.example",
+            "k6.1792860391670.38@load.example",
+            "k6.1792860391670.39@load.example",
+            "k6.1792860391670.40@load.example",
+            "k6.1792860391670.41@load.example",
+            "k6.1792860391670.42@load.example",
+            "k6.1792860391670.43@load.example",
+            "k6.1792860391670.44@load.example",
+            "k6.1792860391670.45@load.example",
+            "k6.1792860391670.46@load.example",
+            "k6.1792860391670.47@load.example",
+            "k6.1792860391670.48@load.example",
+            "k6.1792860391670.49@load.example",
+            "k6.1792860391670.50@load.example",
+            "k6.1792860391670.51@load.example",
+            "k6.1792860391670.52@load.example",
+            "k6.1792860391670.53@load.example",
+            "k6.1792860391670.54@load.example",
+            "k6.1792860391670.55@load.example",
+            "k6.1792860391670.56@load.example",
+            "k6.1792860391670.57@load.example",
+            "k6.1792860391670.58@load.example",
+            "k6.1792860391670.59@load.example",
+            "k6.1792860391670.60@load.example",
+            "k6.1792860391670.61@load.example",
+            "k6.1792860391670.62@load.example",
+            "k6.1792860391670.63@load.example",
+            "k6.1792860391670.64@load.example",
+            "k6.1792860391670.65@load.example",
+            "k6.1792860391670.66@load.example",
+            "k6.1792860391670.67@load.example",
+            "k6.1792860391670.68@load.example",
+            "k6.1792860391670.69@load.example",
+            "k6.1792860391670.70@load.example",
+            "k6.1792860391670.71@load.example",
+            "k6.1792860391670.72@load.example",
+            "k6.1792860391670.73@load.example",
+            "k6.1792860391670.74@load.example",
+            "k6.1792860391670.75@load.example",
+            "k6.1792860391670.76@load.example",
+            "k6.1792860391670.77@load.example",
+            "k6.1792860391670.78@load.example",
+            "k6.1792860391670.79@load.example",
+            "k6.1792860391670.80@load.example",
+            "k6.1792860391670.81@load.example",
+            "k6.1792860391670.82@load.example",
+            "k6.1792860391670.83@load.example",
+            "k6.1792860391670.84@load.example",
+            "k6.1792860391670.85@load.example",
+            "k6.1792860391670.86@load.example",
+            "k6.1792860391670.87@load.example",
+            "k6.1792860391670.88@load.example",
+            "k6.1792860391670.89@load.example",
+            "k6.1792860391670.90@load.example",
+            "k6.1792860391670.91@load.example",
+            "k6.1792860391670.92@load.example",
+            "k6.1792860391670.93@load.example",
+            "k6.1792860391670.94@load.example",
+            "k6.1792860391670.95@load.example",
+            "k6.1792860391670.96@load.example",
+            "k6.1792860391670.97@load.example",
+            "k6.1792860391670.98@load.example",
+            "k6.1792860391670.99@load.example"
+        ],
+        "editor": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiZWRpdG9yIiwibmFtZSI6IlByb2YuIERyLiBMZXlsYSBFZGl0w7ZyIiwiaXNzIjoia29uZ3JlaHViIiwic3ViIjoiMiIsImV4cCI6MTc5Mjg2MTI5MCwiaWF0IjoxNzkyODYwMzkwfQ.WxwL2skG8V49P_D-jJEWK7IHuKigdpzBF2bZCNvWXQs",
+        "readers": [
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXR0ZW5kZWUiLCJuYW1lIjoiS2F0xLFsxLFtY8SxIFNlbGluIiwiaXNzIjoia29uZ3JlaHViIiwic3ViIjoiNiIsImV4cCI6MTc5Mjg2MTI5MCwiaWF0IjoxNzkyODYwMzkwfQ.h-7iVoHBGCR6jRs9g4-Ln_LzHpynwCN_-gflklak3HQ",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXR0ZW5kZWUiLCJuYW1lIjoiWmV5bmVwIFNpbmdoIiwiaXNzIjoia29uZ3JlaHViIiwic3ViIjoiODYwIiwiZXhwIjoxNzkyODYxMjkwLCJpYXQiOjE3OTI4NjAzOTB9.glTSR5BPYl5Slk_sWVDS78ykwuEb477srAyUBdXHbn4",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXR0ZW5kZWUiLCJuYW1lIjoiSm9uYXMgQmlhbmNoaSIsImlzcyI6ImtvbmdyZWh1YiIsInN1YiI6Ijg2MSIsImV4cCI6MTc5Mjg2MTI5MCwiaWF0IjoxNzkyODYwMzkwfQ.uwB-zVL0BisT_AxUCI7INi_AlLpurb7jyyWF9ORnITA",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXR0ZW5kZWUiLCJuYW1lIjoiTHVjw61hIMOHZWxpayIsImlzcyI6ImtvbmdyZWh1YiIsInN1YiI6Ijg2MiIsImV4cCI6MTc5Mjg2MTI5MCwiaWF0IjoxNzkyODYwMzkwfQ.Q7JBOTHuKjXRTKw7IM88GljaxrubWv9ZuvZG44pKufE",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXR0ZW5kZWUiLCJuYW1lIjoiU2Vya2FuIMOWemthbiIsImlzcyI6ImtvbmdyZWh1YiIsInN1YiI6Ijg2MyIsImV4cCI6MTc5Mjg2MTI5MCwiaWF0IjoxNzkyODYwMzkwfQ.28aT7xeV_E4P9i6cJF3JSHcGHhUkgP7e4nKI8BpruKg",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXR0ZW5kZWUiLCJuYW1lIjoiTWVpIFBhcmsiLCJpc3MiOiJrb25ncmVodWIiLCJzdWIiOiI4NjQiLCJleHAiOjE3OTI4NjEyOTEsImlhdCI6MTc5Mjg2MDM5MX0.jDbvFWmavw3MT9F3RyjtrPMf96mMOcS2hp4-ZxbE3QQ",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXR0ZW5kZWUiLCJuYW1lIjoiR2l1bGlhIFNpbmdoIiwiaXNzIjoia29uZ3JlaHViIiwic3ViIjoiODY1IiwiZXhwIjoxNzkyODYxMjkxLCJpYXQiOjE3OTI4NjAzOTF9.en6GXRGWZZLAosqQk_uUmm0BMPjoU2NvzulbatNYeEQ",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXR0ZW5kZWUiLCJuYW1lIjoiTHVrYXMgxZ5pbcWfZWsiLCJpc3MiOiJrb25ncmVodWIiLCJzdWIiOiI4NjYiLCJleHAiOjE3OTI4NjEyOTEsImlhdCI6MTc5Mjg2MDM5MX0.1UEiZvv_ugUYjy2QfPNR9K-T0J_7VFpV9-q8Od-IW7o",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXR0ZW5kZWUiLCJuYW1lIjoiTWVobWV0IMOcbmFsIiwiaXNzIjoia29uZ3JlaHViIiwic3ViIjoiODY3IiwiZXhwIjoxNzkyODYxMjkxLCJpYXQiOjE3OTI4NjAzOTF9.gIP6Wy8sZgdUG_xt46B9l7lGxyMSQTxgSDdSrNtYxmc",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXR0ZW5kZWUiLCJuYW1lIjoiRW1yZSBEZW1pciIsImlzcyI6ImtvbmdyZWh1YiIsInN1YiI6Ijg2OCIsImV4cCI6MTc5Mjg2MTI5MSwiaWF0IjoxNzkyODYwMzkxfQ.RdBiZiBx8oLDLmFjQ4g67cYF72I1NA6MOvvMO50A4o0",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXR0ZW5kZWUiLCJuYW1lIjoiSGlybyBEdWJvaXMiLCJpc3MiOiJrb25ncmVodWIiLCJzdWIiOiI4NjkiLCJleHAiOjE3OTI4NjEyOTEsImlhdCI6MTc5Mjg2MDM5MX0.ErTekeSnHcRB2sA3XT8pFgeiL4Y07cIWoP4xVL13DRg",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXR0ZW5kZWUiLCJuYW1lIjoiTHVjw61hIEFsaSIsImlzcyI6ImtvbmdyZWh1YiIsInN1YiI6Ijg3MCIsImV4cCI6MTc5Mjg2MTI5MSwiaWF0IjoxNzkyODYwMzkxfQ.eCGo63dpAW5p5dK0x7aZy4vnUovBjYOr-6kGM_CMDT4",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXR0ZW5kZWUiLCJuYW1lIjoiTWVobWV0IEthcmEiLCJpc3MiOiJrb25ncmVodWIiLCJzdWIiOiI4NzEiLCJleHAiOjE3OTI4NjEyOTEsImlhdCI6MTc5Mjg2MDM5MX0.atqFingeWIX7z4rI4VTXCzQSzRDc4ErLB6_tzD-d0Lo",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXR0ZW5kZWUiLCJuYW1lIjoiTGF5bGEgS2ltIiwiaXNzIjoia29uZ3JlaHViIiwic3ViIjoiODcyIiwiZXhwIjoxNzkyODYxMjkxLCJpYXQiOjE3OTI4NjAzOTF9.qyGMJXK-lVPxOyQjNuYXIm6CDBiWiqxTNMpi-46RD1I",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXR0ZW5kZWUiLCJuYW1lIjoiTGlhbSBUYW5ha2EiLCJpc3MiOiJrb25ncmVodWIiLCJzdWIiOiI4NzMiLCJleHAiOjE3OTI4NjEyOTEsImlhdCI6MTc5Mjg2MDM5MX0.1d5nL5NyKVN-JBWPGzNiT-AiMK78rCHeTfybvWpLVBI",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXR0ZW5kZWUiLCJuYW1lIjoiS2VyZW0gS2F5YSIsImlzcyI6ImtvbmdyZWh1YiIsInN1YiI6Ijg3NCIsImV4cCI6MTc5Mjg2MTI5MSwiaWF0IjoxNzkyODYwMzkxfQ.H7xVy-m-Vx3YxQS1DWRsADc7z84rTSzSwbtA19_rdXA",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXR0ZW5kZWUiLCJuYW1lIjoiV2VpIEFyc2xhbiIsImlzcyI6ImtvbmdyZWh1YiIsInN1YiI6Ijg3NSIsImV4cCI6MTc5Mjg2MTI5MSwiaWF0IjoxNzkyODYwMzkxfQ.NpSa6IJqepHyqi8xq0frutveTK5hEh7as9l1KSLiDXk",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXR0ZW5kZWUiLCJuYW1lIjoiTWFyY28gWcSxbGTEsXoiLCJpc3MiOiJrb25ncmVodWIiLCJzdWIiOiI4NzYiLCJleHAiOjE3OTI4NjEyOTEsImlhdCI6MTc5Mjg2MDM5MX0.BHyv_RxO0cYCqFhCuC_ZjbzocR1zGfoT8z-zqTpUxtk",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXR0ZW5kZWUiLCJuYW1lIjoiTXVzdGFmYSDDlnpkZW1pciIsImlzcyI6ImtvbmdyZWh1YiIsInN1YiI6Ijg3NyIsImV4cCI6MTc5Mjg2MTI5MSwiaWF0IjoxNzkyODYwMzkxfQ.YBK1Rn5Ao58SszmtO8-BamydCISDtFPBXQO5NWiXjQw",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXR0ZW5kZWUiLCJuYW1lIjoiQ2xhcmEgTm92YWsiLCJpc3MiOiJrb25ncmVodWIiLCJzdWIiOiI4NzgiLCJleHAiOjE3OTI4NjEyOTEsImlhdCI6MTc5Mjg2MDM5MX0.v9BjMvHruNEGbZgM_PHfAHg5AdlyPb0GS2WeNx-FnWw"
+        ]
     }
 }

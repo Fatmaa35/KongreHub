@@ -1,0 +1,419 @@
+### KongreHub — elle deneme koleksiyonu (VS Code REST Client)
+### Önce "docker compose up" ile sistemi başlatın. İstekleri yukarıdan aşağı çalıştırın;
+### token'lar ve kimlikler önceki yanıtlardan otomatik alınır. Tüm demo parolaları: Demo123!
+
+@base = http://localhost:8080
+@pw = Demo123!
+
+###############################################################################
+# Sağlık, metrik, doküman
+###############################################################################
+GET {{base}}/health
+
+###
+GET {{base}}/metrics
+
+###
+GET {{base}}/openapi.yaml
+
+###############################################################################
+# Kimlik doğrulama
+###############################################################################
+# @name editorLogin
+POST {{base}}/api/auth/login
+Content-Type: application/json
+
+{"email": "editor@kongrehub.test", "password": "{{pw}}"}
+
+###
+# @name authorLogin
+POST {{base}}/api/auth/login
+Content-Type: application/json
+
+{"email": "author@kongrehub.test", "password": "{{pw}}"}
+
+###
+# @name reviewerLogin
+POST {{base}}/api/auth/login
+Content-Type: application/json
+
+{"email": "reviewer@kongrehub.test", "password": "{{pw}}"}
+
+###
+# @name registrarLogin
+POST {{base}}/api/auth/login
+Content-Type: application/json
+
+{"email": "registrar@kongrehub.test", "password": "{{pw}}"}
+
+###
+# @name attendeeLogin
+POST {{base}}/api/auth/login
+Content-Type: application/json
+
+{"email": "attendee@kongrehub.test", "password": "{{pw}}"}
+
+###
+# @name adminLogin
+POST {{base}}/api/auth/login
+Content-Type: application/json
+
+{"email": "admin@kongrehub.test", "password": "{{pw}}"}
+
+###
+@editor = {{editorLogin.response.body.access_token}}
+@author = {{authorLogin.response.body.access_token}}
+@reviewer = {{reviewerLogin.response.body.access_token}}
+@registrar = {{registrarLogin.response.body.access_token}}
+@attendee = {{attendeeLogin.response.body.access_token}}
+@admin = {{adminLogin.response.body.access_token}}
+
+### Yanlış parola → 401 invalid_credentials
+POST {{base}}/api/auth/login
+Content-Type: application/json
+
+{"email": "author@kongrehub.test", "password": "yanlis"}
+
+### Refresh token rotasyonu
+POST {{base}}/api/auth/refresh
+Content-Type: application/json
+
+{"refresh_token": "{{authorLogin.response.body.refresh_token}}"}
+
+### Yetki ihlali: yazar editör listesini çekemez → 403
+GET {{base}}/api/submissions
+Authorization: Bearer {{author}}
+
+### Oturumsuz → 401
+GET {{base}}/api/me
+
+###
+GET {{base}}/api/me
+Authorization: Bearer {{author}}
+
+### Çıkış (refresh token iptali)
+POST {{base}}/api/auth/logout
+Content-Type: application/json
+
+{"refresh_token": "{{adminLogin.response.body.refresh_token}}"}
+
+###############################################################################
+# F-1 Bildiri gönderimi
+###############################################################################
+GET {{base}}/api/institutions
+Authorization: Bearer {{author}}
+
+###
+GET {{base}}/api/keywords
+Authorization: Bearer {{author}}
+
+### Bildiri gönder (multipart). sample.pdf yerine kendi PDF'inizin yolunu yazın.
+# @name newSubmission
+POST {{base}}/api/submissions
+Authorization: Bearer {{author}}
+Content-Type: multipart/form-data; boundary=KH
+
+--KH
+Content-Disposition: form-data; name="metadata"
+
+{"title":"Explainable Transfer Learning for Medical Imaging","abstract":"We propose an explainable transfer learning method and evaluate it on public medical imaging benchmarks.","keywords":["deep learning","medical imaging","transfer learning"],"duration_minutes":20,"authors":[{"full_name":"Dr. Fatma Yazar","email":"author@kongrehub.test","institution_id":3,"is_presenter":true}]}
+--KH
+Content-Disposition: form-data; name="file"; filename="draft.pdf"
+Content-Type: application/pdf
+
+< ./scripts/sample.pdf
+--KH--
+
+###
+@sub = {{newSubmission.response.body.id}}
+
+###
+GET {{base}}/api/submissions/mine
+Authorization: Bearer {{author}}
+
+###
+GET {{base}}/api/submissions/{{sub}}
+Authorization: Bearer {{author}}
+
+### PDF (metadata temizlenmiş, nötr dosya adı)
+GET {{base}}/api/submissions/{{sub}}/file
+Authorization: Bearer {{author}}
+
+###
+GET {{base}}/api/submissions/{{sub}}/history
+Authorization: Bearer {{author}}
+
+### Demo yazarın düzeltme istenen bildirisi (hakemler "Hakem A/B/C" olarak görünür)
+GET {{base}}/api/submissions/101
+Authorization: Bearer {{author}}
+
+###############################################################################
+# F-2 / T-1 Hakem havuzu ve atama
+###############################################################################
+GET {{base}}/api/reviewers?limit=20
+Authorization: Bearer {{editor}}
+
+###
+GET {{base}}/api/reviewers?keyword=medical%20imaging
+Authorization: Bearer {{editor}}
+
+### Ölçüm: 500 bildirinin tamamı için atama (kaydetmez) — < 20 sn, atanamayanlar nedenleriyle
+POST {{base}}/api/assignments/auto
+Authorization: Bearer {{editor}}
+Content-Type: application/json
+Idempotency-Key: dryrun-all-{{$timestamp}}
+
+{"dry_run": true, "scope": "all"}
+
+### Bekleyen bildirilere gerçek atama
+POST {{base}}/api/assignments/auto
+Authorization: Bearer {{editor}}
+Content-Type: application/json
+Idempotency-Key: run-{{$timestamp}}
+
+{}
+
+###
+GET {{base}}/api/assignments/report
+Authorization: Bearer {{editor}}
+
+### Elle atama (reviewer_id'yi /api/reviewers yanıtından seçin). ÇÇ varsa 409 conflict_of_interest
+POST {{base}}/api/submissions/{{sub}}/assignments
+Authorization: Bearer {{editor}}
+Content-Type: application/json
+
+{"reviewer_id": 10}
+
+###############################################################################
+# F-3 / T-3 Değerlendirme, uyuşmazlık, düzeltme, süreler
+###############################################################################
+# @name myAssignments
+GET {{base}}/api/reviewer/assignments?status=assigned
+Authorization: Bearer {{reviewer}}
+
+###
+@aid = {{myAssignments.response.body.items[0].id}}
+
+###
+GET {{base}}/api/reviewer/assignments/{{aid}}
+Authorization: Bearer {{reviewer}}
+
+### Hakem bildiriyi görür ama yazar alanları yoktur
+GET {{base}}/api/submissions/{{myAssignments.response.body.items[0].submission_id}}
+Authorization: Bearer {{reviewer}}
+
+### Değerlendirme gönder (Idempotency-Key)
+POST {{base}}/api/reviewer/assignments/{{aid}}/review
+Authorization: Bearer {{reviewer}}
+Content-Type: application/json
+Idempotency-Key: review-{{aid}}-1
+
+{"originality": 8, "significance": 7, "methodology": 8, "clarity": 9, "recommendation": "minor_revision", "comments_to_author": "Yöntem açık; deneyler genişletilmeli.", "comments_to_editor": ""}
+
+### Editör kararı (yalnızca reviews_complete durumunda; değilse 409 invalid_transition)
+POST {{base}}/api/submissions/{{sub}}/decision
+Authorization: Bearer {{editor}}
+Content-Type: application/json
+Idempotency-Key: decision-{{sub}}-{{$timestamp}}
+
+{"decision": "major_revision", "note_to_author": "Deneyleri genişletin."}
+
+### Hatırlatma / 14 gün süre aşımı job'ı (ikinci çalıştırma hiçbir şey değiştirmez)
+POST {{base}}/api/jobs/reminders/run
+Authorization: Bearer {{editor}}
+Content-Type: application/json
+
+{}
+
+### (DEMO_MODE) tek bir atamayı 15 gün geriye al, sonra job'ı çalıştırın
+POST {{base}}/api/admin/demo/backdate-assignment
+Authorization: Bearer {{admin}}
+Content-Type: application/json
+
+{"assignment_id": {{aid}}, "days": 15}
+
+###
+GET {{base}}/api/jobs/runs
+Authorization: Bearer {{editor}}
+
+###############################################################################
+# F-4 / T-4 Program
+###############################################################################
+GET {{base}}/api/rooms
+Authorization: Bearer {{attendee}}
+
+###
+GET {{base}}/api/slots
+Authorization: Bearer {{attendee}}
+
+###
+GET {{base}}/api/program
+Authorization: Bearer {{attendee}}
+
+### Çizelgele (deneme)
+POST {{base}}/api/program/generate
+Authorization: Bearer {{editor}}
+Content-Type: application/json
+Idempotency-Key: gen-{{$timestamp}}
+
+{"dry_run": true}
+
+### Bağımsız doğrulayıcı
+GET {{base}}/api/program/validate
+Authorization: Bearer {{editor}}
+
+### Oturumu dolu hücreye taşı → 409 schedule_conflict (+ ihlaller)
+PUT {{base}}/api/program/sessions/1
+Authorization: Bearer {{editor}}
+Content-Type: application/json
+
+{"room_id": 6, "slot_id": 1}
+
+### Kişisel program + iCal
+POST {{base}}/api/agenda
+Authorization: Bearer {{attendee}}
+Content-Type: application/json
+
+{"session_id": 1}
+
+###
+GET {{base}}/api/agenda.ics
+Authorization: Bearer {{attendee}}
+
+###############################################################################
+# F-5 / T-5 Kayıt, ücret, ödeme, iade
+###############################################################################
+GET {{base}}/api/fx/current
+Authorization: Bearer {{attendee}}
+
+### Kademeli fiyat: erken / normal / geç
+POST {{base}}/api/registrations/quote
+Authorization: Bearer {{attendee}}
+Content-Type: application/json
+
+{"currency": "EUR", "at": "2027-05-01T10:00:00+03:00", "student": true, "member": true, "group_size": 5}
+
+### Kayıt (TRY → kur dondurulur)
+# @name reg
+POST {{base}}/api/registrations
+Authorization: Bearer {{attendee}}
+Content-Type: application/json
+Idempotency-Key: reg-attendee-1
+
+{"currency": "TRY"}
+
+###
+@regId = {{reg.response.body.id}}
+
+### Yeni kur kaydı — dondurulmuş kaydın tutarı değişmez
+POST {{base}}/api/fx
+Authorization: Bearer {{registrar}}
+Content-Type: application/json
+
+{"rate": "48.500000"}
+
+### Ödeme (aynı anahtarla tekrar → aynı yanıt, Idempotent-Replayed: true)
+POST {{base}}/api/registrations/{{regId}}/payments
+Authorization: Bearer {{attendee}}
+Content-Type: application/json
+Idempotency-Key: pay-attendee-1
+
+{"outcome": "success"}
+
+###
+GET {{base}}/api/registrations/mine
+Authorization: Bearer {{attendee}}
+
+### İade önizlemesi (60+ gün %90, 30–59 %50, 7–29 %25, <7 %0)
+GET {{base}}/api/registrations/{{regId}}/refund-quote?at=2027-04-20T12:00:00%2B03:00
+Authorization: Bearer {{attendee}}
+
+### Grup kaydı (5+ kişi, e-postalar sistemde kayıtlı olmalı)
+POST {{base}}/api/registrations/group
+Authorization: Bearer {{registrar}}
+Content-Type: application/json
+Idempotency-Key: group-{{$timestamp}}
+
+{"name": "Demo grubu", "currency": "EUR", "emails": ["a@x.example","b@x.example","c@x.example","d@x.example","e@x.example"]}
+
+###
+GET {{base}}/api/registrations?status=paid&limit=20
+Authorization: Bearer {{registrar}}
+
+### Faturalar (gap_count = 0)
+GET {{base}}/api/invoices?limit=20
+Authorization: Bearer {{registrar}}
+
+### Webhook — geçersiz imza → 401
+POST {{base}}/api/payments/webhook
+Content-Type: application/json
+X-Signature: deadbeef
+
+{"event_id":"evt_x","type":"payment.succeeded","provider_ref":"pay_x","amount_cents":1,"currency":"EUR"}
+
+### İptal (ödenmişse kademeli iade)
+POST {{base}}/api/registrations/{{regId}}/cancel
+Authorization: Bearer {{attendee}}
+Content-Type: application/json
+Idempotency-Key: cancel-{{regId}}
+
+{"reason": "deneme"}
+
+###############################################################################
+# F-6 Sertifika
+###############################################################################
+# @name cert
+POST {{base}}/api/certificates
+Authorization: Bearer {{attendee}}
+Content-Type: application/json
+Idempotency-Key: cert-attendee-1
+
+{"kind": "attendance"}
+
+###
+GET {{base}}/api/certificates/mine
+Authorization: Bearer {{attendee}}
+
+###
+GET {{base}}/api/certificates/{{cert.response.body.id}}/pdf
+Authorization: Bearer {{attendee}}
+
+### Herkese açık doğrulama (QR'ın açtığı uç)
+GET {{base}}/api/certificates/verify?id={{cert.response.body.id}}&sig={{cert.response.body.signature}}
+
+###
+GET {{base}}/api/certificates/public-key
+
+###############################################################################
+# F-7 Raporlar ve yönetim
+###############################################################################
+GET {{base}}/api/reports/overview
+Authorization: Bearer {{editor}}
+
+###
+GET {{base}}/api/reports/reviewers
+Authorization: Bearer {{editor}}
+
+###
+GET {{base}}/api/reports/finance
+Authorization: Bearer {{registrar}}
+
+###
+GET {{base}}/api/reports/submissions.csv
+Authorization: Bearer {{editor}}
+
+###
+GET {{base}}/api/live
+Authorization: Bearer {{attendee}}
+
+###
+GET {{base}}/api/admin/users?role=reviewer&limit=10
+Authorization: Bearer {{admin}}
+
+###
+GET {{base}}/api/admin/audit?limit=20
+Authorization: Bearer {{admin}}
+
+### Rol × uç nokta matrisi (RBAC kaydı)
+GET {{base}}/api/admin/routes
+Authorization: Bearer {{admin}}

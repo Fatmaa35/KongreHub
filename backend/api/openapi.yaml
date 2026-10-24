@@ -2,4 +2,955 @@ openapi: 3.0.3
 info:
   title: KongreHub API
   version: 1.0.0
-paths: {}
+  description: |
+    Bilimsel kongre, çift kör hakem değerlendirmesi, program ve kayıt yönetimi.
+    Hata biçimi her uçta aynıdır: {"error":{"code":"...","message":"..."}}.
+    x-roles: uca erişebilen roller (boş = oturum açmış herkes). Rol dışı çağrı 403, oturumsuz 401 döner.
+    Büyük listeler keyset sayfalıdır: ?limit=&cursor= → next_cursor.
+servers:
+  - url: http://localhost:8080
+components:
+  securitySchemes:
+    bearer: {type: http, scheme: bearer, bearerFormat: JWT}
+  parameters:
+    IdempotencyKey: {name: Idempotency-Key, in: header, required: true, schema: {type: string, minLength: 8, maxLength: 128},
+      description: 'Aynı anahtarla tekrar istek ilk yanıtı aynen döner (Idempotent-Replayed: true); farklı gövde 422.'}
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties: {code: {type: string}, message: {type: string}, details: {type: object}}
+  responses:
+    Error: {description: Hata, content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}}
+paths:
+  /health:
+    get: {summary: 'Sağlık (veritabanı + depolama); 200 veya 503', tags: [ops], responses: {'200': {description: OK}, '503': {$ref: '#/components/responses/Error'}}}
+  /metrics:
+    get: {summary: Prometheus metrikleri, tags: [ops], responses: {'200': {description: text/plain}}}
+  /api/admin/audit:
+    get:
+      summary: "GET /api/admin/audit"
+      tags: [admin]
+      x-roles: ["admin"]
+      security: [{bearer: []}]
+      responses:
+        '200': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/admin/clock:
+    get:
+      summary: "GET /api/admin/clock"
+      tags: [admin]
+      x-roles: ["admin", "editor"]
+      security: [{bearer: []}]
+      responses:
+        '200': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+    post:
+      summary: "(DEMO_MODE) uygulama saatini ileri al"
+      tags: [admin]
+      x-roles: ["admin"]
+      security: [{bearer: []}]
+      requestBody: {content: {application/json: {example: {"offset_hours": 0}}}}
+      responses:
+        '200': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/admin/demo/backdate-assignment:
+    post:
+      summary: "(DEMO_MODE) tek atamayı geriye tarihle"
+      tags: [admin]
+      x-roles: ["admin"]
+      security: [{bearer: []}]
+      requestBody: {content: {application/json: {example: {"assignment_id": 1, "days": 15}}}}
+      responses:
+        '200': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/admin/routes:
+    get:
+      summary: "GET /api/admin/routes"
+      tags: [admin]
+      x-roles: ["admin"]
+      security: [{bearer: []}]
+      responses:
+        '200': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/admin/users:
+    get:
+      summary: "GET /api/admin/users"
+      tags: [admin]
+      x-roles: ["admin"]
+      security: [{bearer: []}]
+      responses:
+        '200': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+    post:
+      summary: "Kullanıcı oluştur"
+      tags: [admin]
+      x-roles: ["admin"]
+      security: [{bearer: []}]
+      requestBody: {content: {application/json: {example: {"email": "x@y.example", "password": "Demo123!", "full_name": "X", "role": "attendee"}}}}
+      responses:
+        '201': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/agenda:
+    get:
+      summary: "GET /api/agenda"
+      tags: [agenda]
+      x-roles: []
+      security: [{bearer: []}]
+      responses:
+        '200': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+    post:
+      summary: "Kişisel programa oturum ekle"
+      tags: [agenda]
+      x-roles: []
+      security: [{bearer: []}]
+      requestBody: {content: {application/json: {example: {"session_id": 5}}}}
+      responses:
+        '201': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/agenda.ics:
+    get:
+      summary: "Kişisel program iCalendar dışa aktarımı"
+      tags: [agenda.ics]
+      x-roles: []
+      security: [{bearer: []}]
+      responses:
+        '200': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/agenda/{sessionId}:
+    delete:
+      summary: "DELETE /api/agenda/{sessionId}"
+      tags: [agenda]
+      x-roles: []
+      security: [{bearer: []}]
+      parameters:
+        - {name: sessionId, in: path, required: true, schema: {type: string}}
+      responses:
+        '200': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/assignments/auto:
+    post:
+      summary: "Min-cost flow otomatik hakem ataması (dry_run, scope=pending|all)"
+      tags: [assignments]
+      x-roles: ["editor", "admin"]
+      security: [{bearer: []}]
+      parameters:
+        - {$ref: '#/components/parameters/IdempotencyKey'}
+      requestBody: {content: {application/json: {example: {"dry_run": true, "scope": "all"}}}}
+      responses:
+        '200': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/assignments/report:
+    get:
+      summary: "GET /api/assignments/report"
+      tags: [assignments]
+      x-roles: ["editor", "admin"]
+      security: [{bearer: []}]
+      responses:
+        '200': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/assignments/{id}/release:
+    post:
+      summary: "Açık atamayı geri al"
+      tags: [assignments]
+      x-roles: ["editor", "admin"]
+      security: [{bearer: []}]
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: string}}
+      requestBody: {content: {application/json: {example: {"reason": "..."}}}}
+      responses:
+        '200': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/auth/login:
+    post:
+      summary: "Giriş; access + refresh token döner"
+      tags: [auth]
+      x-roles: []
+      security: []
+      requestBody: {content: {application/json: {example: {"email": "author@kongrehub.test", "password": "Demo123!"}}}}
+      responses:
+        '200': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+  /api/auth/logout:
+    post:
+      summary: "Refresh token iptali"
+      tags: [auth]
+      x-roles: []
+      security: []
+      requestBody: {content: {application/json: {example: {"refresh_token": "..."}}}}
+      responses:
+        '200': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+  /api/auth/refresh:
+    post:
+      summary: "Refresh token rotasyonu (eskisi iptal edilir; tekrar kullanımı tüm oturumları kapatır)"
+      tags: [auth]
+      x-roles: []
+      security: []
+      requestBody: {content: {application/json: {example: {"refresh_token": "..."}}}}
+      responses:
+        '200': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+  /api/certificates:
+    post:
+      summary: "Sertifika üret (attendance|presenter)"
+      tags: [certificates]
+      x-roles: ["author", "reviewer", "editor", "attendee"]
+      security: [{bearer: []}]
+      parameters:
+        - {$ref: '#/components/parameters/IdempotencyKey'}
+      requestBody: {content: {application/json: {example: {"kind": "attendance"}}}}
+      responses:
+        '201': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/certificates/mine:
+    get:
+      summary: "GET /api/certificates/mine"
+      tags: [certificates]
+      x-roles: ["author", "reviewer", "editor", "attendee"]
+      security: [{bearer: []}]
+      responses:
+        '200': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/certificates/public-key:
+    get:
+      summary: "GET /api/certificates/public-key"
+      tags: [certificates]
+      x-roles: []
+      security: []
+      responses:
+        '200': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+  /api/certificates/verify:
+    get:
+      summary: "Herkese açık QR doğrulaması (?id=&sig=)"
+      tags: [certificates]
+      x-roles: []
+      security: []
+      responses:
+        '200': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+  /api/certificates/{id}/pdf:
+    get:
+      summary: "Ed25519 imzalı QR içeren sertifika PDF'i"
+      tags: [certificates]
+      x-roles: ["author", "reviewer", "editor", "attendee", "registrar", "admin"]
+      security: [{bearer: []}]
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: string}}
+      responses:
+        '200': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/fx:
+    post:
+      summary: "EUR/TRY kuru kaydet"
+      tags: [fx]
+      x-roles: ["registrar", "admin"]
+      security: [{bearer: []}]
+      requestBody: {content: {application/json: {example: {"rate": "45.123456"}}}}
+      responses:
+        '201': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/fx/current:
+    get:
+      summary: "GET /api/fx/current"
+      tags: [fx]
+      x-roles: []
+      security: [{bearer: []}]
+      responses:
+        '200': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/institutions:
+    get:
+      summary: "GET /api/institutions"
+      tags: [institutions]
+      x-roles: []
+      security: [{bearer: []}]
+      responses:
+        '200': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/invoices:
+    get:
+      summary: "GET /api/invoices"
+      tags: [invoices]
+      x-roles: ["registrar", "admin"]
+      security: [{bearer: []}]
+      responses:
+        '200': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/jobs/reminders/run:
+    post:
+      summary: "Hatırlatma/süre aşımı job'ını şimdi çalıştır (idempotent)"
+      tags: [jobs]
+      x-roles: ["editor", "admin"]
+      security: [{bearer: []}]
+      requestBody: {content: {application/json: {example: {}}}}
+      responses:
+        '200': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/jobs/runs:
+    get:
+      summary: "GET /api/jobs/runs"
+      tags: [jobs]
+      x-roles: ["editor", "admin"]
+      security: [{bearer: []}]
+      responses:
+        '200': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/keywords:
+    get:
+      summary: "GET /api/keywords"
+      tags: [keywords]
+      x-roles: []
+      security: [{bearer: []}]
+      responses:
+        '200': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/live:
+    get:
+      summary: "GET /api/live"
+      tags: [live]
+      x-roles: []
+      security: [{bearer: []}]
+      responses:
+        '200': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/me:
+    get:
+      summary: "Oturumdaki kullanıcı"
+      tags: [me]
+      x-roles: []
+      security: [{bearer: []}]
+      responses:
+        '200': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/payments/webhook:
+    post:
+      summary: "Ödeme sağlayıcı webhook'u (X-Signature: HMAC-SHA256); event_id ile idempotent"
+      tags: [payments]
+      x-roles: []
+      security: []
+      requestBody: {content: {application/json: {example: {"event_id": "evt_1", "type": "payment.succeeded", "provider_ref": "pay_x", "amount_cents": 30000, "currency": "EUR"}}}}
+      responses:
+        '200': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+  /api/program:
+    get:
+      summary: "GET /api/program"
+      tags: [program]
+      x-roles: []
+      security: [{bearer: []}]
+      responses:
+        '200': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/program/generate:
+    post:
+      summary: "Program çizelgeleme + bağımsız doğrulama"
+      tags: [program]
+      x-roles: ["editor", "admin"]
+      security: [{bearer: []}]
+      parameters:
+        - {$ref: '#/components/parameters/IdempotencyKey'}
+      requestBody: {content: {application/json: {example: {"dry_run": true}}}}
+      responses:
+        '200': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/program/sessions/{id}:
+    put:
+      summary: "Oturumu taşı (sürükle-bırak); çakışma yaratırsa 409"
+      tags: [program]
+      x-roles: ["editor", "admin"]
+      security: [{bearer: []}]
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: string}}
+      requestBody: {content: {application/json: {example: {"room_id": 3, "slot_id": 7}}}}
+      responses:
+        '200': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/program/validate:
+    get:
+      summary: "Kayıtlı programı bağımsız doğrulayıcıyla denetle"
+      tags: [program]
+      x-roles: ["editor", "admin"]
+      security: [{bearer: []}]
+      responses:
+        '200': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/registrations:
+    post:
+      summary: "Kayıt oluştur; TRY ise kur dondurulur"
+      tags: [registrations]
+      x-roles: ["author", "reviewer", "editor", "attendee"]
+      security: [{bearer: []}]
+      parameters:
+        - {$ref: '#/components/parameters/IdempotencyKey'}
+      requestBody: {content: {application/json: {example: {"currency": "TRY"}}}}
+      responses:
+        '201': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+    get:
+      summary: "GET /api/registrations"
+      tags: [registrations]
+      x-roles: ["registrar", "admin"]
+      security: [{bearer: []}]
+      responses:
+        '200': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/registrations/group:
+    post:
+      summary: "Grup kaydı (5+ kişi → %10 indirim), tek transaction"
+      tags: [registrations]
+      x-roles: ["registrar"]
+      security: [{bearer: []}]
+      parameters:
+        - {$ref: '#/components/parameters/IdempotencyKey'}
+      requestBody: {content: {application/json: {example: {"name": "Lab", "currency": "EUR", "emails": ["a@x.example"]}}}}
+      responses:
+        '201': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/registrations/mine:
+    get:
+      summary: "GET /api/registrations/mine"
+      tags: [registrations]
+      x-roles: ["author", "reviewer", "editor", "attendee"]
+      security: [{bearer: []}]
+      responses:
+        '200': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/registrations/quote:
+    post:
+      summary: "Fiyat teklifi (kademe, indirimler, kur)"
+      tags: [registrations]
+      x-roles: ["author", "reviewer", "editor", "attendee", "registrar"]
+      security: [{bearer: []}]
+      requestBody: {content: {application/json: {example: {"currency": "TRY", "at": "2027-03-01T10:00:00+03:00"}}}}
+      responses:
+        '200': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/registrations/{id}/cancel:
+    post:
+      summary: "İptal ve tarihe göre kademeli iade"
+      tags: [registrations]
+      x-roles: ["author", "reviewer", "editor", "attendee", "registrar"]
+      security: [{bearer: []}]
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: string}}
+        - {$ref: '#/components/parameters/IdempotencyKey'}
+      requestBody: {content: {application/json: {example: {"reason": "..."}}}}
+      responses:
+        '200': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/registrations/{id}/payments:
+    post:
+      summary: "Ödeme (sağlayıcı simülatörü: success|fail|async)"
+      tags: [registrations]
+      x-roles: ["author", "reviewer", "editor", "attendee", "registrar"]
+      security: [{bearer: []}]
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: string}}
+        - {$ref: '#/components/parameters/IdempotencyKey'}
+      requestBody: {content: {application/json: {example: {"outcome": "success"}}}}
+      responses:
+        '201': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/registrations/{id}/refund-quote:
+    get:
+      summary: "İade önizlemesi (?at=RFC3339)"
+      tags: [registrations]
+      x-roles: ["author", "reviewer", "editor", "attendee", "registrar"]
+      security: [{bearer: []}]
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: string}}
+      responses:
+        '200': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/registrations/{id}/requote:
+    post:
+      summary: "Süresi geçen kur dondurmasını yenile"
+      tags: [registrations]
+      x-roles: ["author", "reviewer", "editor", "attendee", "registrar"]
+      security: [{bearer: []}]
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: string}}
+      requestBody: {content: {application/json: {example: {}}}}
+      responses:
+        '200': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/reports/finance:
+    get:
+      summary: "GET /api/reports/finance"
+      tags: [reports]
+      x-roles: ["registrar", "admin"]
+      security: [{bearer: []}]
+      responses:
+        '200': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/reports/overview:
+    get:
+      summary: "GET /api/reports/overview"
+      tags: [reports]
+      x-roles: ["editor", "admin"]
+      security: [{bearer: []}]
+      responses:
+        '200': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/reports/reviewers:
+    get:
+      summary: "GET /api/reports/reviewers"
+      tags: [reports]
+      x-roles: ["editor", "admin"]
+      security: [{bearer: []}]
+      responses:
+        '200': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/reports/submissions.csv:
+    get:
+      summary: "GET /api/reports/submissions.csv"
+      tags: [reports]
+      x-roles: ["editor", "admin"]
+      security: [{bearer: []}]
+      responses:
+        '200': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/reviewer/assignments:
+    get:
+      summary: "GET /api/reviewer/assignments"
+      tags: [reviewer]
+      x-roles: ["reviewer"]
+      security: [{bearer: []}]
+      responses:
+        '200': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/reviewer/assignments/{id}:
+    get:
+      summary: "GET /api/reviewer/assignments/{id}"
+      tags: [reviewer]
+      x-roles: ["reviewer"]
+      security: [{bearer: []}]
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: string}}
+      responses:
+        '200': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/reviewer/assignments/{id}/decline:
+    post:
+      summary: "Atamayı reddet; yerine hakem atanır"
+      tags: [reviewer]
+      x-roles: ["reviewer"]
+      security: [{bearer: []}]
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: string}}
+      requestBody: {content: {application/json: {example: {"reason": "..."}}}}
+      responses:
+        '200': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/reviewer/assignments/{id}/review:
+    post:
+      summary: "Değerlendirme formu; tur tamamlanınca uyuşmazlık kontrolü (>3 → 4. hakem)"
+      tags: [reviewer]
+      x-roles: ["reviewer"]
+      security: [{bearer: []}]
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: string}}
+        - {$ref: '#/components/parameters/IdempotencyKey'}
+      requestBody: {content: {application/json: {example: {"originality": 8, "significance": 7, "methodology": 8, "clarity": 9, "recommendation": "minor_revision", "comments_to_author": "...", "comments_to_editor": ""}}}}
+      responses:
+        '201': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/reviewers:
+    get:
+      summary: "GET /api/reviewers"
+      tags: [reviewers]
+      x-roles: ["editor", "admin"]
+      security: [{bearer: []}]
+      responses:
+        '200': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/rooms:
+    get:
+      summary: "GET /api/rooms"
+      tags: [rooms]
+      x-roles: []
+      security: [{bearer: []}]
+      responses:
+        '200': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+    post:
+      summary: "POST /api/rooms"
+      tags: [rooms]
+      x-roles: ["editor", "admin"]
+      security: [{bearer: []}]
+      responses:
+        '201': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/slots:
+    get:
+      summary: "GET /api/slots"
+      tags: [slots]
+      x-roles: []
+      security: [{bearer: []}]
+      responses:
+        '200': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/submissions:
+    post:
+      summary: "Bildiri gönderimi (multipart: metadata JSON + file PDF). PDF yazar metadata'sı temizlenir."
+      tags: [submissions]
+      x-roles: ["author"]
+      security: [{bearer: []}]
+      requestBody: {content: {multipart/form-data: {schema: {type: object}}}}
+      responses:
+        '201': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+    get:
+      summary: "GET /api/submissions"
+      tags: [submissions]
+      x-roles: ["editor", "admin"]
+      security: [{bearer: []}]
+      responses:
+        '200': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/submissions/mine:
+    get:
+      summary: "GET /api/submissions/mine"
+      tags: [submissions]
+      x-roles: ["author"]
+      security: [{bearer: []}]
+      responses:
+        '200': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/submissions/{id}:
+    get:
+      summary: "Bildiri detayı; role göre çift kör projeksiyon (hakem yazarı, yazar hakemi göremez)"
+      tags: [submissions]
+      x-roles: ["author", "reviewer", "editor", "admin"]
+      security: [{bearer: []}]
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: string}}
+      responses:
+        '200': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/submissions/{id}/assignments:
+    post:
+      summary: "Elle hakem ataması (satır kilidi, ÇÇ ve kapasite kontrolü)"
+      tags: [submissions]
+      x-roles: ["editor", "admin"]
+      security: [{bearer: []}]
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: string}}
+      requestBody: {content: {application/json: {example: {"reviewer_id": 42}}}}
+      responses:
+        '201': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/submissions/{id}/decision:
+    post:
+      summary: "Editör kararı (accept|minor_revision|major_revision|reject)"
+      tags: [submissions]
+      x-roles: ["editor"]
+      security: [{bearer: []}]
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: string}}
+        - {$ref: '#/components/parameters/IdempotencyKey'}
+      requestBody: {content: {application/json: {example: {"decision": "accept", "note_to_author": "..."}}}}
+      responses:
+        '200': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/submissions/{id}/file:
+    get:
+      summary: "PDF indir (nötr dosya adı, temizlenmiş metadata)"
+      tags: [submissions]
+      x-roles: ["author", "reviewer", "editor", "admin"]
+      security: [{bearer: []}]
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: string}}
+      responses:
+        '200': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/submissions/{id}/history:
+    get:
+      summary: "GET /api/submissions/{id}/history"
+      tags: [submissions]
+      x-roles: ["author", "editor", "admin"]
+      security: [{bearer: []}]
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: string}}
+      responses:
+        '200': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/submissions/{id}/revisions:
+    post:
+      summary: "Düzeltilmiş sürüm (multipart: response_letter + file); tur+1"
+      tags: [submissions]
+      x-roles: ["author"]
+      security: [{bearer: []}]
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: string}}
+      requestBody: {content: {multipart/form-data: {schema: {type: object}}}}
+      responses:
+        '201': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/submissions/{id}/withdraw:
+    post:
+      summary: "Bildiriyi geri çek"
+      tags: [submissions]
+      x-roles: ["author"]
+      security: [{bearer: []}]
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: string}}
+      requestBody: {content: {application/json: {example: {"reason": "..."}}}}
+      responses:
+        '200': {description: Başarılı}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
