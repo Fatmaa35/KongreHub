@@ -317,3 +317,9 @@ textarea { min-height: 96px; resize: vertical; }
 .next-icon { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; background: var(--cobalt-t); color: var(--cobalt); flex-shrink: 0; }
 
 @media (min-width: 1100px) { .card > .stats:only-child, .stats.wide { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); } }
+
+/* sidebar flex sütununda kart ve menü sıkışıp kırpılmasın */
+.side > * { flex-shrink: 0; }
+.badge-card { flex-shrink: 0; overflow: visible; }
+.badge-strap { border-radius: var(--r-lg) var(--r-lg) 0 0; }
+.badge-role { border-radius: 0 0 var(--r-lg) var(--r-lg); }
