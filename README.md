@@ -97,8 +97,8 @@ Rol başına farklı ekranlar ve yoğun sunucu durumu (sayfalama, periyodik canl
 
 ### Arayüz tasarımı ve kullanıcı deneyimi
 
-- **Görsel kimlik:** Kongrenin İstanbul'da olmasından yola çıkarak İznik çinisi renkleri seçildi: kobalt (ana renk), turkuaz (ikincil), çini kırmızısı (yalnızca hata ve uyarı). Başlıklarda Bricolage Grotesque, metinde Figtree kullanılıyor.
-- **Yaka kartı:** Kenar çubuğunun üstünde, rol rengine bürünen bir kongre yaka kartı kim olduğunuzu ve hangi rolle çalıştığınızı her an gösteriyor. Giriş ekranı da "yaka kartınızı seçin" mantığıyla tek tıkla demo girişi sunuyor.
+- **Görsel dil:** Kongre sekreteryasının her gün açık tuttuğu bir iş aracı hedeflendi: tek yazı ailesi (IBM Plex Sans, sayılarda Plex Mono), tek vurgu rengi (lacivert), gölge ve süs yok; bilgi tablolar ve ince çizgilerle ayrılıyor.
+- **Gezinme:** Üst çubukta kongre tarihi ve oturum açan kişi, altında role göre sekme menüsü var. Giriş ekranı demo hesapları rol ve yetkileriyle bir tabloda listeliyor, her biri tek tıkla açılıyor.
 - **Yönlendiren genel bakış:** Her role kendi "sırada ne var" adımları gösteriliyor. Hakem, süresi en yakın değerlendirmelerini ilk bakışta görüyor. Canlı akışta yeni olaylar kısa süre vurgulanıyor.
 - **Süreç görünürlüğü:** Bildiri sayfasında yaşam döngüsü adım çizgisi var (gönderildi → hakem incelemesi → düzeltme turu → karar).
 - **Geri bildirim:** Her işlem sonrası bildirim (toast) çıkıyor. Tarayıcının `confirm()` penceresi yerine sonucu açıklayan bir onay penceresi açılıyor (ör. iptalde iade tutarı). Yüklenirken iskelet yükleyiciler, boş ekranlarda ne yapılacağını söyleyen durumlar gösteriliyor.

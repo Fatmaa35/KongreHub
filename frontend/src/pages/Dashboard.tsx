@@ -4,8 +4,7 @@ import { Link } from 'react-router-dom'
 import { api, type Page, type Role } from '../api'
 import { useAuth } from '../auth'
 import { Card, PageTitle, QueryState, Stat } from '../components/ui'
-import { Icon, type IconName } from '../components/icons'
-import { time } from '../format'
+import { roleLabel, time } from '../format'
 
 interface Live {
   counts: Record<string, number>
@@ -41,37 +40,37 @@ const actionLabel: Record<string, string> = {
   'registration.requoted': 'Kayıt yeniden fiyatlandı',
 }
 
-interface Next { to: string; title: string; desc: string; icon: IconName }
+interface Next { to: string; title: string; desc: string }
 
 const nextSteps: Record<Role, Next[]> = {
   author: [
-    { to: '/author/submissions', title: 'Bildirilerimi izle', desc: 'Durum, hakem yorumları ve kararlar', icon: 'doc' },
-    { to: '/author/new', title: 'Yeni bildiri gönder', desc: 'PDF yükleyin, yazar bilgisi otomatik gizlenir', icon: 'plus' },
-    { to: '/registration', title: 'Kaydımı tamamla', desc: 'Programa alınmak için en az bir yazar ödemeli', icon: 'card' },
+    { to: '/author/submissions', title: 'Bildirilerimi izle', desc: 'Durum, hakem yorumları ve kararlar' },
+    { to: '/author/new', title: 'Yeni bildiri gönder', desc: 'PDF yükleyin, yazar bilgisi otomatik gizlenir' },
+    { to: '/registration', title: 'Kaydımı tamamla', desc: 'Programa alınmak için en az bir yazar ödemeli' },
   ],
   reviewer: [
-    { to: '/reviewer', title: 'Bekleyen değerlendirmeler', desc: 'Yanıt süresi atamadan itibaren 14 gün', icon: 'check' },
-    { to: '/program', title: 'Kongre programı', desc: 'Oturumlar ve salonlar', icon: 'calendar' },
+    { to: '/reviewer', title: 'Bekleyen değerlendirmeler', desc: 'Yanıt süresi atamadan itibaren 14 gün' },
+    { to: '/program', title: 'Kongre programı', desc: 'Oturumlar ve salonlar' },
   ],
   editor: [
-    { to: '/editor/assignments', title: 'Hakemleri ata', desc: 'Uzmanlık, çıkar çatışması ve yük dengesiyle', icon: 'shuffle' },
-    { to: '/editor/submissions?disagreement=true', title: 'Karar bekleyenler', desc: 'Değerlendirmesi tamamlanan bildiriler', icon: 'doc' },
-    { to: '/editor/program', title: 'Programı kur', desc: 'Çakışmasız oturum planı, sürükle-bırak', icon: 'grid' },
+    { to: '/editor/assignments', title: 'Hakemleri ata', desc: 'Uzmanlık, çıkar çatışması ve yük dengesiyle' },
+    { to: '/editor/submissions?disagreement=true', title: 'Karar bekleyenler', desc: 'Değerlendirmesi tamamlanan bildiriler' },
+    { to: '/editor/program', title: 'Programı kur', desc: 'Çakışmasız oturum planı, sürükle-bırak' },
   ],
   registrar: [
-    { to: '/registrar', title: 'Kayıtları izle', desc: 'Ödemeler canlı olarak düşer', icon: 'list' },
-    { to: '/registrar/group', title: 'Grup kaydı aç', desc: '5+ kişide her üyeye %10 indirim', icon: 'users' },
-    { to: '/registrar/invoices', title: 'Faturalar', desc: 'Boşluksuz numaralandırma', icon: 'receipt' },
+    { to: '/registrar', title: 'Kayıtları izle', desc: 'Ödemeler canlı olarak düşer' },
+    { to: '/registrar/group', title: 'Grup kaydı aç', desc: '5+ kişide her üyeye %10 indirim' },
+    { to: '/registrar/invoices', title: 'Faturalar', desc: 'Boşluksuz numaralandırma' },
   ],
   attendee: [
-    { to: '/registration', title: 'Kongreye kaydol', desc: 'Erken kayıt fiyatı şu an geçerli', icon: 'card' },
-    { to: '/program', title: 'Oturumları keşfet', desc: 'Beğendiklerini kendi programına ekle', icon: 'calendar' },
-    { to: '/certificates', title: 'Sertifika al', desc: 'QR kodla doğrulanabilir PDF', icon: 'award' },
+    { to: '/registration', title: 'Kongreye kaydol', desc: 'Erken kayıt fiyatı şu an geçerli' },
+    { to: '/program', title: 'Oturumları keşfet', desc: 'Beğendiklerini kendi programına ekle' },
+    { to: '/certificates', title: 'Sertifika al', desc: 'QR kodla doğrulanabilir PDF' },
   ],
   admin: [
-    { to: '/admin/audit', title: 'Denetim kaydı', desc: 'Kim, ne zaman, neyi değiştirdi', icon: 'shield' },
-    { to: '/admin/users', title: 'Kullanıcılar', desc: 'Roller ve kurumlar', icon: 'users' },
-    { to: '/reports', title: 'Raporlar', desc: 'Bildiri ve hakem istatistikleri', icon: 'chart' },
+    { to: '/admin/audit', title: 'Denetim kaydı', desc: 'Kim, ne zaman, neyi değiştirdi' },
+    { to: '/admin/users', title: 'Kullanıcılar', desc: 'Roller ve kurumlar' },
+    { to: '/reports', title: 'Raporlar', desc: 'Bildiri ve hakem istatistikleri' },
   ],
 }
 
@@ -98,24 +97,22 @@ export default function Dashboard() {
   const seen = useRef<number>(0)
   // canlı akış: simülatörün ürettiği olaylar birkaç saniyede bir görünür
   const q = useQuery({ queryKey: ['live'], queryFn: () => api<Live>('/api/live'), refetchInterval: 3000 })
-  const hour = new Date().getHours()
-  const greet = hour < 12 ? 'Günaydın' : hour < 18 ? 'İyi günler' : 'İyi akşamlar'
-  const firstName = user!.full_name.replace(/^(Prof\.|Doç\.|Dr\.)\s*/g, '').replace(/^(Prof\.|Doç\.|Dr\.)\s*/g, '').split(' ')[0]
   return (
     <>
-      <PageTitle sub="Kongreye 10 Mayıs 2027'de İstanbul'da başlıyoruz.">{greet}, {firstName}</PageTitle>
+      <PageTitle sub={`${roleLabel[user!.role]} · ${user!.institution ?? ''}`}>Genel bakış</PageTitle>
 
-      <div className="next-grid">
-        {nextSteps[user!.role].map((n) => (
-          <Link key={n.to} to={n.to} className="next">
-            <span className="next-icon"><Icon name={n.icon} /></span>
-            <span>
-              <strong>{n.title}</strong>
-              <small>{n.desc}</small>
-            </span>
-          </Link>
-        ))}
-      </div>
+      <Card title="Yapılacaklar">
+        <ul className="todo">
+          {nextSteps[user!.role].map((n) => (
+            <li key={n.to}>
+              <Link to={n.to}>
+                <strong>{n.title}</strong>
+                <small>{n.desc}</small>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </Card>
 
       {user!.role === 'reviewer' && <ReviewerQueue />}
 
@@ -125,14 +122,14 @@ export default function Dashboard() {
           seen.current = d.recent_events[0]?.id ?? prev
           return (
             <div className="grid two">
-              <Card title={<><Icon name="pulse" /> Kongre şu anda</>}>
+              <Card title="Güncel durum">
                 <div className="stats">
                   <Stat label="Bildiri" value={d.counts.submissions} />
                   <Stat label="Kayıt" value={d.counts.registrations} hint={`${d.counts.paid_registrations} ödenmiş`} />
                   <Stat label="Açık hakem ataması" value={d.counts.open_assignments} />
                   <Stat label="Değerlendirme" value={d.counts.reviews} />
                 </div>
-                <p className="hint" style={{ marginTop: 14 }}>
+                <p className="fx">
                   1 EUR = <strong>{d.fx.rate}</strong> TRY ({time(d.fx.observed_at)} itibarıyla). TRY ile kaydolanların kuru kayıt anında sabitlenir.
                 </p>
               </Card>
