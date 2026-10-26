@@ -9,6 +9,18 @@ KongreHub; bildiri gönderimini, **çift kör** hakem değerlendirmesini, otomat
 
 ---
 
+## Ekran görüntüleri
+
+Görüntüler `docker compose up` sonrası seed verisiyle (SEED=42) alınmıştır.
+
+| Giriş | Genel bakış (editör) |
+|---|---|
+| ![Giriş ekranı](docs/screenshots/01-giris.png) | ![Genel bakış](docs/screenshots/02-genel-bakis.png) |
+| **Bildiri detayı** | **Program oluşturma** |
+| ![Bildiri detayı](docs/screenshots/03-bildiri-detay.png) | ![Program oluşturma](docs/screenshots/04-program.png) |
+| **Hakem: değerlendirmelerim** | **Kayıt ve ödeme** |
+| ![Hakem ekranı](docs/screenshots/05-hakem.png) | ![Kayıt ve ödeme](docs/screenshots/06-kayit.png) |
+
 ## 1. Kurulum ve çalıştırma
 
 ```bash
