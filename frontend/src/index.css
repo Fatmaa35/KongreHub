@@ -330,3 +330,9 @@ textarea { min-height: 96px; resize: vertical; }
 .badge-body { align-items: flex-start; }
 .badge-role { flex-wrap: wrap; gap: 4px 8px; }
 .side { padding-top: 22px; }
+
+/* üstteki ince şerit ve çentik kesik gibi görünüyordu: kaldırıldı, kart üstten tam görünür */
+.badge-strap { display: none; }
+.badge-card { overflow: hidden; border-top: 4px solid var(--role); }
+.badge-top { padding-top: 12px; }
+.badge-role { border-radius: 0; }
