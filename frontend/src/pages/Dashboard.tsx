@@ -92,6 +92,35 @@ function ReviewerQueue() {
   )
 }
 
+const milestones = [
+  { date: new Date('2026-09-01'), label: 'Çağrı açıldı', when: '1 Eylül 2026' },
+  { date: new Date('2027-01-15'), label: 'Bildiri son tarihi', when: '15 Ocak 2027' },
+  { date: new Date('2027-03-01'), label: 'Hakem kararları', when: '1 Mart 2027' },
+  { date: new Date('2027-05-10'), label: 'Kongre', when: '10–12 Mayıs, İstanbul' },
+]
+
+function Hero() {
+  const now = new Date()
+  const days = Math.max(0, Math.ceil((milestones[3].date.getTime() - now.getTime()) / 86400000))
+  const nextIdx = milestones.findIndex((m) => m.date > now)
+  return (
+    <section className="hero" aria-label="Kongre takvimi">
+      <div className="countdown">
+        <b>{days}</b>
+        <span>gün kaldı</span>
+      </div>
+      <ol className="milestones">
+        {milestones.map((m, i) => (
+          <li key={m.label} className={m.date <= now ? 'past' : i === nextIdx ? 'next' : ''}>
+            <b>{m.label}</b>
+            <span>{m.when}</span>
+          </li>
+        ))}
+      </ol>
+    </section>
+  )
+}
+
 export default function Dashboard() {
   const { user } = useAuth()
   const seen = useRef<number>(0)
@@ -100,6 +129,7 @@ export default function Dashboard() {
   return (
     <>
       <PageTitle sub={`${roleLabel[user!.role]} · ${user!.institution ?? ''}`}>Genel bakış</PageTitle>
+      <Hero />
 
       <Card title="Yapılacaklar">
         <ul className="todo">

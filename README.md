@@ -97,7 +97,7 @@ Rol başına farklı ekranlar ve yoğun sunucu durumu (sayfalama, periyodik canl
 
 ### Arayüz tasarımı ve kullanıcı deneyimi
 
-- **Görsel dil:** Kongre sekreteryasının her gün açık tuttuğu bir iş aracı hedeflendi: tek yazı ailesi (IBM Plex Sans, sayılarda Plex Mono), tek vurgu rengi (lacivert), gölge ve süs yok; bilgi tablolar ve ince çizgilerle ayrılıyor.
+- **Görsel dil:** Kongre sekreteryasının her gün açık tuttuğu bir iş aracı hedeflendi: başlıklarda bildiri kitaplarını anımsatan Source Serif, metinde IBM Plex Sans; lacivert ana renk, kiremit vurgu. Genel bakışta kongreye kalan gün ve önemli tarihler (çağrı, son gönderim, hakem kararı, kongre) bir zaman çizelgesinde gösteriliyor.
 - **Gezinme:** Üst çubukta kongre tarihi ve oturum açan kişi, altında role göre sekme menüsü var. Giriş ekranı demo hesapları rol ve yetkileriyle bir tabloda listeliyor, her biri tek tıkla açılıyor.
 - **Yönlendiren genel bakış:** Her role kendi "sırada ne var" adımları gösteriliyor. Hakem, süresi en yakın değerlendirmelerini ilk bakışta görüyor. Canlı akışta yeni olaylar kısa süre vurgulanıyor.
 - **Süreç görünürlüğü:** Bildiri sayfasında yaşam döngüsü adım çizgisi var (gönderildi → hakem incelemesi → düzeltme turu → karar).

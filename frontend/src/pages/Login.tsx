@@ -42,13 +42,22 @@ export default function Login() {
     <div className="login-page">
       <header className="login-head">
         <div className="topbar-in">
-          <span className="wordmark">KongreHub</span>
+          <span className="wordmark">Kongre<em>Hub</em></span>
           <span className="event">10–12 Mayıs 2027 · İstanbul</span>
         </div>
       </header>
       <div className="login-body">
         <section className="login-intro">
-          <h1>Kongre yönetim sistemi</h1>
+          <div className="poster">
+            <small>Uluslararası Bilim Kongresi</small>
+            <h1>KongreHub 2027</h1>
+            <p>Bildiriden kürsüye, tek sistemde.</p>
+            <dl>
+              <div><dt>Bildiri son tarihi</dt><dd>15 Ocak 2027</dd></div>
+              <div><dt>Hakem kararları</dt><dd>1 Mart 2027</dd></div>
+              <div><dt>Kongre</dt><dd>10–12 Mayıs 2027</dd></div>
+            </dl>
+          </div>
           <p>
             Bildiri gönderimi, çift kör hakem değerlendirmesi, oturum programı, kayıt ve sertifika işlemleri. Aşağıdaki demo
             hesaplardan biriyle girebilirsiniz; hepsinin parolası <code>Demo123!</code>
