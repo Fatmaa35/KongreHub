@@ -67,7 +67,7 @@ export default function Layout() {
           <button className="icon-btn menu-btn" aria-label="Menü" aria-expanded={open} onClick={() => setOpen(!open)}>
             <Icon name={open ? 'x' : 'menu'} />
           </button>
-          <Link to="/" className="wordmark">KongreHub</Link>
+          <Link to="/" className="wordmark">Kongre<em>Hub</em></Link>
           <span className="event">10–12 Mayıs 2027 · İstanbul</span>
           <div className="who">
             <div className="who-name">
