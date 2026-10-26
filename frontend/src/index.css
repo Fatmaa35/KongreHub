@@ -323,3 +323,10 @@ textarea { min-height: 96px; resize: vertical; }
 .badge-card { flex-shrink: 0; overflow: visible; }
 .badge-strap { border-radius: var(--r-lg) var(--r-lg) 0 0; }
 .badge-role { border-radius: 0 0 var(--r-lg) var(--r-lg); }
+
+/* isim ve kurum kesilmeden tam görünsün */
+.shell { grid-template-columns: 292px 1fr; }
+.badge-who span, .badge-who strong { white-space: normal; overflow: visible; text-overflow: clip; overflow-wrap: anywhere; }
+.badge-body { align-items: flex-start; }
+.badge-role { flex-wrap: wrap; gap: 4px 8px; }
+.side { padding-top: 22px; }
